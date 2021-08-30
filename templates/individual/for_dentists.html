@@ -1,0 +1,45 @@
+{% extends 'main/base.html' %}
+{% block content %}
+
+<head>
+    <title>Для стоматологов</title>
+</head>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb-nav">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}"><i class="fas fa-home"></i> Главная</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Индивидуальное обучение для стоматологов</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- Breadcrumb -->
+
+<div class="container default-padding">
+    <h2 class="default-padding-bottom">
+        Для стоматологов
+    </h2>
+    <div class="row">
+        {% for individual in dentist_individual %}
+            <div class="col-sm ind-card-body">
+                <div class="card ind-card">
+                    <img src="{{ individual.photo.url }}" class="card-img-top ind-image" alt="Фото">
+                    <div class="card-body text-center body-int">
+                        <h5 class="card-title card-height-ind-den">{{ individual.title }}</h5>
+                        <div class="body-int-abs">
+                            {% if individual.doctor %}
+                            <p class="card-text"><i class="fas fa-user-md"></i> &nbsp;Доктор: {{ individual.doctor }}</p>
+                            {% endif %}
+                            <a href="{{ individual.url }}" class="btn blue-btn text-center card-button">Подробнее</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock content %}

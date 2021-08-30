@@ -1,0 +1,170 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <!-- Required meta tags -->
+    <meta http-equiv="Content-Type" content="text/html" charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+          rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="shortcut icon" href="{% static '/images/begoacademy_icon.png' %}" type="image/x-icon">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/responsive_style.css' %}">
+
+    <!-- Scripts-->
+    <script src="https://kit.fontawesome.com/c2302614a4.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript">
+       (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+       m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+       (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+    
+       ym(76390156, "init", {
+            clickmap:true,
+            trackLinks:true,
+            accurateTrackBounce:true
+       });
+
+    </script>
+    <noscript>
+        <div><img src="https://mc.yandex.ru/watch/76390156" style="position:absolute; left:-9999px;" alt=""/></div>
+    </noscript>
+    <!-- /Yandex.Metrika counter -->
+</head>
+
+<body>
+    
+<!-- Navbar -->
+<nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        {% load static %}
+        <a class="navbar-brand" href="/">
+            <img src="{% static '/images/logo.png' %}" alt="Logo">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+                aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" aria-current="page" href="/"><b>Главная</b></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'all_seminars' %}"><b>Семинары</b></a>
+                </li>
+                <li class="nav-item dropdown {% if 'individual' in request.path %} active {% endif %}">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        <b>Индивидуальное обучение</b>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <li><a class="dropdown-item" href="{% url 'for_dentists' %}">Для стоматологов</a></li>
+                        <li><a class="dropdown-item" href="{% url 'for_tech' %}">Для зубных техников</a></li>
+                        <li><a class="dropdown-item" href="{% url 'for_clinics' %}">Для стоматологических клиник</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'past_seminars' %}"><b>Прошедшие семинары</b></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'lectors' %}"><b>Лекторы</b></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'gallery' %}"><b>Галерея</b></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'contacts' %}"><b>Контакты</b></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<!-- /Navbar -->
+
+<!-- Content -->
+<div>
+    {% block content %}{% endblock content %}
+</div>
+<!-- /Content -->
+
+<!-- Optional JavaScript; choose one of the two! -->
+
+<!-- Option 1: Bootstrap Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0"
+        crossorigin="anonymous"></script>
+
+</body>
+
+<!-- Footer -->
+<footer class="bg-light text-center text-lg-start pt-5 pb-4">
+    <!-- Grid container -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 col-md-12 mb-4 mb-md-0 logo-padding">
+                <a href="/"><img class="footer-logo" src="{% static '/images/begoacademy_logo.png' %}" alt="Logo"></a>
+            </div>
+            <div class="col-lg-4 col-md-12 mb-4 mb-md-0 text-left">
+                <div>
+                    <p class="mb-0">
+                        <b>Телефон:  </b><a href="tel:+79634193636">8 (963) 419-36-36</a>
+                    </p>
+                    <p>
+                        <b>Email:  </b><a href="mailto:begoacademy@gmail.com">begoacademy@gmail.com<br></a>
+                    </p>
+                </div>
+                <div class="footer-bottom">
+                    <p class="mb-0">
+                        <b>Адрес: </b>
+                    </p>
+                    <p>
+                        г. Махачкала, ул. Аскерханова, 1В
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-12 mb-4 mb-md-0 text-left">
+                <p>
+                    <b>Наши соцсети:  </b>
+                    <b>
+                        <a href="https://www.instagram.com/begoacademy/" target="_blank"><img
+                                src="{% static '/images/icons/instagram.png' %}" alt="Instagram"></a>
+                        <a href="https://facebook.com/pg/bego5school/events/?ref=page_internal&mt_nav=1"
+                           target="_blank"><img src="{% static '/images/icons/facebook.png' %}" alt="Facebook"></a>
+                        <a href="https://wa.me/+79634193636" target="_blank"><img
+                                src="{% static '/images/icons/whatsapp.png' %}" alt="WhatsApp"></a>
+                    </b>
+                </p>
+                <p class="footer-bottom">© <span id="copyright-year"></span> Учебный центр BEGO Academy</p>
+            </div>
+        </div>
+        <!-- /Grid row -->
+    </div>
+</footer>
+<!-- /Footer -->
+
+<script src="{% static '/js/active_menu_link.js' %}"></script>
+<script src="{% static '/js/get_full_year.js' %}"></script>
+
+</html>

@@ -1,0 +1,10 @@
+{% extends 'admin/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} | BEGO Academy {% endblock %}
+
+{% block branding %}
+<h1 class="head">
+    <a href="/admin"><img src="{% static 'images/begoacademy_logo_white.png' %}" class="brand_img" height="50" width="auto"></a>
+</h1>
+{% endblock %}

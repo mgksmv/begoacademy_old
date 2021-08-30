@@ -1,0 +1,164 @@
+{% extends 'main/base.html' %}
+{% block content %}
+{% load static %}
+{% load crispy_forms_filters %}
+
+{% if lector.is_published %}
+
+<head>
+    <title>{{ lector.lector.name|truncatechars:100 }}</title>
+</head>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb-nav">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Главная</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'lectors' %}">Лекторы</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ lector.lector.name }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- Breadcrumb -->
+
+<div class="container default-padding">
+    {% if submitted %}
+    <div class="text-center contact-background mb-5 rounded">
+        <h4>
+            Сообщение принято!
+        </h4>
+        <p>
+            Мы Вам сообщим, когда запланируем семинар с данным лектором.
+        </p>
+    </div>
+    {% endif %}
+    {% if invalid_captcha %}
+    <div class="text-center invalid-captcha-background mb-5 rounded">
+        <h4>
+            Форма не принята!
+        </h4>
+        <p>
+            Подтвердите, что Вы не робот.
+        </p>
+    </div>
+    {% endif %}
+    <h2 class="default-padding-bottom">
+        {{ lector.lector.name }}
+    </h2>
+    <div class="row">
+        <div class="col-md-3 text-center pb-3">
+            <img class="rounded lector-img-2 mb-3" src="{{ lector.photo_2.url }}" alt=""><br>
+            {% if lector.instagram %}
+            <a href="{{ lector.instagram }}" target="_blank"><img src="{% static '/images/icons/instagram.png' %}"
+                                                                  alt="Instagram"></a>
+            {% endif %}
+            {% if lector.facebook %}
+            <a href="{{ lector.facebook }}" target="_blank"><img src="{% static '/images/icons/facebook.png' %}"
+                                                                 alt="Facebook"></a>
+            {% endif %}
+            {% if lector.vk %}
+            <a href="{{ lector.vk }}" target="_blank"><img src="{% static '/images/icons/vk.png' %}" alt="Facebook"></a>
+            {% endif %}
+        </div>
+        <div class="col-md-5 pb-5">
+            {% autoescape off %}
+            {{ lector.lector.description }}
+            {% endautoescape %}
+        </div>
+        <div class="col-md-4">
+            <form class="card form" action="" method="post">
+                <h4 class="pb-3">
+                    Хотите быть в курсе предстоящих семинаров лектора? Заполните форму.
+                </h4>
+                {% csrf_token %}
+                {{ form|crispy }}
+                {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                    <li  {% if message.tags %} class="{{ message.tags }} text-danger" {% endif %}> {{ message }} </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                <div class="g-recaptcha" data-sitekey="6LeRex4bAAAAAKiFc5zQdL1pZJ1q6Ue13lTluMrR" data-callback="enableBtn" data-expired-callback="disableBtn"></div>
+                <button type="submit" class="btn blue-btn" id="recaptcha-submit" disabled>Подтвердите, что Вы не робот</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!--Upcoming lectors seminars-->
+<div class="container default-padding" id="seminars">
+    <h3>
+        Ближайшие семинары лектора:
+    </h3>
+    {% if upcoming_seminars_count >= 1 %}
+        <div class="row default-padding">
+            {% for seminar in upcoming_seminars %}
+                {% for seminar_lector in seminar.lector.all %}
+                    {% if seminar_lector.name == lector.lector.name %}
+                        <div class="col-sm">
+                            <div class="card home-card mb-3">
+                                {% if seminar.lector.all.count|add:'0' == 1 %}
+                                {% for lector in seminar.lector.all %}
+                                <img src="{{ lector.photo.url }}" class="card-img-top" alt="Фото">
+                                {% endfor %}
+                                {% else %}
+                                {% if seminar.reserve_photo %}
+                                <img src="{{ seminar.reserve_photo.url }}" class="card-img-top" alt="Фото">
+                                {% elif not seminar.reserve_photo %}
+                                <img src="{% static 'images/default_seminar.jpg' %}" class="card-img-top" alt="Фото">
+                                {% endif %}
+                                {% endif %}
+                                <div class="card-body">
+                                    {% for category in seminar.category.all %}
+                                    <a href="{{ category.get_url }}" class="badge bg-warning"># {{ category }}</a>
+                                    {% endfor %}
+                                    {% for lector in seminar.lector.all %}
+                                    <h4 class="lector-title">{{ lector.name }}</h4>
+                                    {% endfor %}
+                                    <h5 class="card-title">{{ seminar.title }}</h5>
+                                    <ul class="list">
+                                        {% if seminar.organizer %}
+                                            <li><span><i class="fas fa-flag"></i></span>Организатор: {{ seminar.organizer }}</li>
+                                        {% endif %}
+                                        <li><span><i class="fas fa-stream"></i></span>{{ seminar.type }}</li>
+                                        <li><span><i class="far fa-calendar-alt"></i></span>{{ seminar.date_info }}</li>
+                                        <li><span><i class="fas fa-map-marker-alt"></i></span>{{ seminar.place.address }}</li>
+                                    </ul>
+                                    <a href="{{ seminar.get_url }}" class="btn blue-btn">Подробнее</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center">
+            <h6 class="text-danger pt-4 pb-5">В ближайшее время не планируются.</h6>
+        </div>
+    {% endif %}
+    
+
+</div>
+<!--Upcoming lectors seminars-->
+
+<script src="{% static 'js/enable_button.js' %}"></script>
+<script src='https://www.google.com/recaptcha/api.js'></script>
+
+{% else %}
+
+    <head>
+        <title>Страница не найдена</title>
+    </head>
+    
+    <div class="text-center not-found-page">
+        <h2 style="font-size:70px;">404</h2>
+        <h3 class="mb-4">Страница не найдена</h3>
+        <a href="{% url 'home' %}" class="btn blue-btn">Главная страница</a>
+    </div>
+
+{% endif %}
+{% endblock content %}

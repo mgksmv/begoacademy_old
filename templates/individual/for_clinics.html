@@ -1,0 +1,40 @@
+{% extends 'main/base.html' %}
+{% block content %}
+
+<head>
+    <title>Для клиник</title>
+</head>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb-nav">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Главная</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Индивидуальное обучение для клиник</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- Breadcrumb -->
+
+<div class="container default-padding">
+    <h2 class="default-padding-bottom">
+        Для клиник
+    </h2>
+    <div class="row">
+        {% for individual in clinic_individual %}
+            <div class="col-sm ind-card-body">
+                <div class="card ind-card mb-3">
+                    <img src="{{ individual.photo.url }}" class="card-img-top ind-image" alt="Фото">
+                    <div class="card-body text-center">
+                        <h5 class="card-title card-height-ind">{{ individual.title }}</h5>
+                        <a href="{{ individual.url }}" class="btn blue-btn text-center">Подробнее</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock content %}

@@ -1,0 +1,93 @@
+{% extends 'main/base.html' %}
+{% block content %}
+
+<head>
+    <title>Лекторы</title>
+</head>
+
+<!--Breadcrumb-->
+<div class="breadcrumb-nav">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Главная</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Лекторы</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!--Breadcrumb-->
+
+<div class="container default-padding">
+    <h2 class="default-padding-bottom">
+        Лекторы
+    </h2>
+
+    <nav class="mb-5" aria-label="...">
+        <ul class="pagination justify-content-center">
+            <li class="page-item {% if not prev_page_url %} disabled {% endif %}">
+                <a class="page-link" href="{{ prev_page_url }}" tabindex="-1">Пред.</a>
+            </li>
+            {% for n in lectors.paginator.page_range %}
+                {% if lectors.number == n %}
+                    <li class="page-item active">
+                        <a class="page-link" href="?page={{ n }}">{{ n }} <span class="sr-only">(текущая стр)</span></a>
+                    </li>
+                {% elif n > lectors.number|add:-5 and n < lectors.number|add:5 %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ n }}">{{ n }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            <li class="page-item {% if not next_page_url %} disabled {% endif %}">
+                <a class="page-link" href="{{ next_page_url }}">След.</a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="row">
+        {% for lector in lectors %}
+            <div class="col-lg-6 lector-margin">
+                <div class="card">
+                    <div class="row lector-padding">
+                        <div class="col-lg-6 col-sm-12 text-center">
+                            <img src="{{ lector.photo_1.url }}" class="lector-img" alt="">
+                        </div>
+                        <div class="col-lg-6 col-sm-12">
+                            <div class="card-body lector-body">
+                                <h5 class="card-title">{{ lector.lector.name }}</h5>
+                                <p class="card-text lector-padding">{{ lector.lector.bio }}</p>
+                                <a href="{{ lector.url }}" class="btn blue-btn lector-btn">Подробнее</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <nav class="mt-5" aria-label="...">
+        <ul class="pagination justify-content-center">
+            <li class="page-item {% if not prev_page_url %} disabled {% endif %}">
+                <a class="page-link" href="{{ prev_page_url }}" tabindex="-1">Пред.</a>
+            </li>
+            {% for n in lectors.paginator.page_range %}
+                {% if lectors.number == n %}
+                    <li class="page-item active">
+                        <a class="page-link" href="?page={{ n }}">{{ n }} <span class="sr-only">(текущая стр)</span></a>
+                    </li>
+                {% elif n > lectors.number|add:-5 and n < lectors.number|add:5 %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ n }}">{{ n }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            <li class="page-item {% if not next_page_url %} disabled {% endif %}">
+                <a class="page-link" href="{{ next_page_url }}">След.</a>
+            </li>
+        </ul>
+    </nav>
+
+</div>
+
+{% endblock content %}

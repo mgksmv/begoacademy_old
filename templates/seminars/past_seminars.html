@@ -1,0 +1,163 @@
+{% extends 'main/base.html' %}
+{% block content %}
+{% load static %}
+
+<head>
+    <title>Прошедшие семинары</title>
+</head>
+
+<!--Breadcrumb-->
+<div class="breadcrumb-nav">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Главная</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Прошедшие семинары</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!--Breadcrumb-->
+
+<div class="container default-padding">
+    <h2 class="default-padding-bottom">
+        Прошедшие семинары
+    </h2>
+
+    <div class="row">
+        <div class="col-md-3">
+            <div class="seminar-categories">
+                <h3>Категории</h3>
+                <ul class="list-group">
+                    <a href="{% url 'past_seminars' %}" class="list-group-item justify-content-between align-items-center">Все семинары</a>
+                    {% for category in links %}
+                    <a href="{{ category.get_past_url }}" class="list-group-item justify-content-between align-items-center {% if category.url in request.path %} active {% endif %}">{{ category }}</a>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div id="moreDiv" style="display: none;">
+                <ul class="list-group">
+                    <a href="{% url 'past_seminars' %}" class="list-group-item d-flex justify-content-between align-items-center">Все семинары<span class="badge badge-primary badge-pill">{{ category_count }}</span></a>
+                    {% for category in links %}
+                    <a href="{{ category.get_past_url }}" class="list-group-item d-flex justify-content-between align-items-center {% if category.url in request.path %} active {% endif %}">{{ category }}<span class="badge badge-primary badge-pill">{{ category_count }}</span></a>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="mobile-categories text-center mb-5">
+                <button id="moreBtn" onclick="showMore()" class="btn green-btn"><i class="fas fa-align-justify"></i>  Категории семинаров</button>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            {% if active_category == 1 %}
+                <h6 class="pb-3">Найдено {{ seminar_count }}  {% if seminar_count < 4 %} семинара {% else %} семинаров {% endif %}</h6>
+            {% elif active_category != 1 and seminar_count == 1 %}
+                <h6 class="pb-3">Найден 1 семинар в разделе "{{ active_category }}"</h6>
+            {% elif active_category != 1 and seminar_count != 0 %}
+                <h6 class="pb-3">Найдено {{ seminar_count }}  {% if seminar_count < 4 %} семинара {% else %} семинаров {% endif %} в разделе "{{ active_category }}"</h6>
+            {% else %}
+                <h6 class="text-danger">Ничего не найдено</h6>
+            {% endif %}
+            
+            {% if seminar_count > 10 %}
+            <nav class="mb-5" aria-label="...">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item {% if not prev_page_url %} disabled {% endif %}">
+                        <a class="page-link" href="{{ prev_page_url }}" tabindex="-1">Пред.</a>
+                    </li>
+                    {% for n in seminars.paginator.page_range %}
+                    {% if seminars.number == n %}
+                    <li class="page-item active">
+                        <a class="page-link" href="?page={{ n }}">{{ n }} <span class="sr-only">(текущая стр)</span></a>
+                    </li>
+                    {% elif n > seminars.number|add:-5 and n < seminars.number|add:5 %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ n }}">{{ n }}</a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                    <li class="page-item {% if not next_page_url %} disabled {% endif %}">
+                        <a class="page-link" href="{{ next_page_url }}">След.</a>
+                    </li>
+                </ul>
+            </nav>
+            {% endif %}
+
+            {% for seminar in seminars %}
+            <div class="card mb-3">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        {% if seminar.lector.all.count|add:'0' == 1 %}
+                        {% for lector in seminar.lector.all %}
+                        <img src="{{ lector.photo.url }}" class="card-img" alt="Фото">
+                        {% endfor %}
+                        {% else %}
+                        {% if seminar.reserve_photo %}
+                        <img src="{{ seminar.reserve_photo.url }}" class="card-img" alt="Фото">
+                        {% elif not seminar.reserve_photo %}
+                        <img src="{% static 'images/default_seminar.jpg' %}" class="card-img" alt="Фото">
+                        {% endif %}
+                        {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            {% for category in seminar.category.all %}
+                            <a href="{{ category.get_past_url }}" class="badge bg-warning"># {{ category }}</a>
+                            {% endfor %}
+                            {% for lector in seminar.lector.all %}
+                            <h4 class="lector-title">{{ lector.name }}</h4>
+                            {% endfor %}
+                            <h5 class="card-title">{{ seminar.title }}</h5>
+                            <ul class="list">
+                                {% if seminar.organizer %}
+                                <li><span><i class="fas fa-flag"></i></span>Организатор: {{ seminar.organizer }}</li>
+                                {% endif %}
+                                <li><span><i class="fas fa-stream"></i></span>{{ seminar.type }}</li>
+                                {% if seminar.date|date:"Y/m/d" <= today %}
+                                <li><span><i class="far fa-calendar-alt"></i></span>{{ seminar.date }}</li>
+                                {% else %}
+                                <li><span><i class="far fa-calendar-alt"></i></span>{{ seminar.date_info }}</li>
+                                {% endif %}
+                                {% if seminar.participants %}
+                                <li><span><i class="fas fa-users"></i></span>{{ seminar.participants }}</li>
+                                {% endif %}
+                                <li><span><i class="fas fa-map-marker-alt"></i></span>{{ seminar.place.address }}</li>
+                            </ul>
+                            <a href="{{ seminar.get_past_url }}" class="btn blue-btn">Подробнее</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            
+            {% if seminar_count > 10 %}
+            <nav class="mt-5" aria-label="...">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item {% if not prev_page_url %} disabled {% endif %}">
+                        <a class="page-link" href="{{ prev_page_url }}" tabindex="-1">Пред.</a>
+                    </li>
+                    {% for n in seminars.paginator.page_range %}
+                    {% if seminars.number == n %}
+                    <li class="page-item active">
+                        <a class="page-link" href="?page={{ n }}">{{ n }} <span class="sr-only">(текущая стр)</span></a>
+                    </li>
+                    {% elif n > seminars.number|add:-5 and n < seminars.number|add:5 %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ n }}">{{ n }}</a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                    <li class="page-item {% if not next_page_url %} disabled {% endif %}">
+                        <a class="page-link" href="{{ next_page_url }}">След.</a>
+                    </li>
+                </ul>
+            </nav>
+            {% endif %}
+            
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/show_categories.js' %}"></script>
+
+{% endblock content %}

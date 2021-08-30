@@ -1,0 +1,47 @@
+{% extends 'main/base.html' %}
+{% block content %}
+
+<head>
+    {% if post.category == 'Для стоматологов' %}
+    <title>{{ individual_list.category.title }}</title>
+    {% endif %}
+</head>
+
+<!--Breadcrumb-->
+<div class="breadcrumb-nav">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Главная</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Индивидуальное обучение для стоматологов</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!--Breadcrumb-->
+
+<div class="container default-padding">
+    <h2 class="default-padding-bottom">
+        Для стоматологов
+    </h2>
+    <div class="row">
+        {% for post in posts %}
+        {% if post.type == "1" %}
+        <div class="col-sm ind-card-body">
+            <div class="card ind-card mb-3">
+                <img src="{{ post.photo.url }}" class="card-img-top ind-image" alt="Фото">
+                <div class="card-body text-center body-int">
+                    <h5 class="card-title card-height-ind-den">{{ post.title }}</h5>
+                    <div class="body-int-abs">
+                        <p class="card-text"><i class="fas fa-user-md"></i>&nbsp;Доктор: {{ post.doctor }}</p>
+                        <a href="{{ post.url }}" class="btn blue-btn text-center card-button">Подробнее</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock content %}

@@ -1,0 +1,274 @@
+{% extends 'main/base.html' %}
+{% block content %}
+{% load static %}
+{% load crispy_forms_filters %}
+
+{% if seminar.is_published %}
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+
+    <title>{{ seminar.title|truncatechars:100 }}</title>
+</head>
+
+<!--Breadcrumb-->
+<div class="breadcrumb-nav">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Главная</a></li>
+                {% if seminar.is_finished %}
+                <li class="breadcrumb-item"><a href="{% url 'past_seminars' %}">Прошедшие семинары</a></li>
+                {% else %}
+                <li class="breadcrumb-item"><a href="{% url 'all_seminars' %}">Семинары</a></li>
+                {% endif %}
+                <li class="breadcrumb-item active" aria-current="page">{{ seminar.title }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!--Breadcrumb-->
+
+<!-- Seminar -->
+<div class="container default-padding">
+    {% if submitted %}
+    <div class="text-center contact-background mb-5 rounded">
+        <h4>
+            Ваша заявка принята!
+        </h4>
+        <p>
+            Мы вам перезвоним для уточнения деталей
+        </p>
+    </div>
+    {% endif %}
+    {% if invalid_captcha %}
+    <div class="text-center invalid-captcha-background mb-5 rounded">
+        <h4>
+            Форма не принята!
+        </h4>
+        <p>
+            Подтвердите, что Вы не робот.
+        </p>
+    </div>
+    {% endif %}
+    {% if seminar.is_finished %}
+    <h4 class="past-seminar">
+        Семинар завершён
+    </h4>
+    {% elif seminar.additional_info %}
+    <h4 class="additional-info">
+        {{ seminar.additional_info }}
+    </h4>
+    {% endif %}
+    <h3 class="default-padding-bottom">
+        {{ seminar.title }}
+    </h3>
+    <div class="row">
+        <div class="col-md-8 col-md-pr-50">
+            <p>
+                {% autoescape off %}
+                {{ seminar.content }}
+                {% endautoescape %}
+            </p>
+        </div>
+        <div class="col-md-4">
+            <div class="card-body color-background">
+                <ul class="list list-font list-white">
+                    {% autoescape off %}
+                    {% if seminar.organizer %}
+                    <div class="pb-2">
+                        <li><span><i class="fas fa-flag custom-icon"></i></span>Организатор:</li>
+                        <li class="detail-item"><b>{{ seminar.organizer }}</b></li>
+                    </div>
+                    {% endif %}
+                    {% if seminar.is_finished %}
+                    <div class="pb-2">
+                        <li><span><i class="far fa-calendar-alt custom-icon"></i></span>Дата:</li>
+                        <li class="detail-item"><b>{{ seminar.date }}</b></li>
+                    </div>
+                    {% else %}
+                    <div class="pb-2">
+                        <li><span><i class="far fa-calendar-alt custom-icon"></i></span>Дата:</li>
+                        <li class="detail-item"><b>{{ seminar.date_info }}</b></li>
+                    </div>
+                    {% endif %}
+                    <div class="pb-2">
+                        <li><span><i class="fas fa-map-marker-alt custom-icon"></i></span>Место проведения:</li>
+                        <li class="detail-item"><b>{{ seminar.place.address }}</b></li>
+                    </div>
+                    {% if seminar.participants %}
+                    <div class="pb-2">
+                        <li><span><i class="fas fa-users custom-icon"></i></span>Количество участников:</li>
+                        <li class="detail-item"><b>{{ seminar.participants }}</b></li>
+                    </div>
+                    {% endif %}
+                    {% if seminar.price and not seminar.is_finished %}
+                    <div class="pb-2">
+                        <li><span><i class="fas fa-ruble-sign custom-icon"></i></span>Цена:</li>
+                        <li class="detail-item"><b>{{ seminar.price }}</b></li>
+                    </div>
+                    {% endif %}
+                    {% endautoescape %}
+                </ul>
+            </div>
+            {% if not seminar.is_finished %}
+                {% if remaining.days == 1 and remaining.days > 0 %}
+                <h5 class="remaining-days">До семинара остался 1 день, успей записаться!</h5>
+                {% elif remaining.days <= 4 and remaining.days > 0 %}
+                <h5 class="remaining-days">До семинара осталось {{ remaining.days }} дня, успей записаться!</h5>
+                {% elif remaining.days <= 10 and remaining.days > 0 %}
+                <h5 class="remaining-days">До семинара осталось {{ remaining.days }} дней, успей записаться!</h5>
+                {% endif %}
+                
+                {% if seminar.organizer.name and seminar.organizer.name != "BEGO Academy" %}
+                <div class="card-body">
+                    <h4 class="pb-3">
+                        Контакты для записи:
+                    </h4>
+                    <ul class="list list-font">
+                        {% for number in organizer_numbers %}
+                            {% if number.post == seminar.organizer %}
+                            <li style="font-size: 21px;"><span><i class="fas fa-phone-volume"></i></span><a href="tel:{{ number.number }}">
+                                {{ number.number }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                        {% for whatsapp_number in organizer_whatsapp_numbers %}
+                            {% if whatsapp_number.post == seminar.organizer %}
+                            <li style="font-size: 21px;"><span><i class="fab fa-whatsapp"></i></span><a href="https://wa.me/{{ whatsapp_number.number }}">
+                                {{ whatsapp_number.number }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% else %}
+                <form class="card contact-form" action="" method="post">
+                    <h4 class="pb-3">
+                        Записаться
+                    </h4>
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    {% if messages %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                        <li  {% if message.tags %} class="{{ message.tags }} text-danger" {% endif %}> {{ message }} </li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                    <div class="g-recaptcha" data-sitekey="6LeRex4bAAAAAKiFc5zQdL1pZJ1q6Ue13lTluMrR" data-callback="enableBtn" data-expired-callback="disableBtn"></div>
+                    <button type="submit" class="btn blue-btn" id="recaptcha-submit" disabled>Подтвердите, что Вы не робот</button>
+                </form>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+<!-- Seminar -->
+
+<!-- Lector info -->
+<div class="breadcrumb-nav">
+    <div class="container default-padding">
+        {% if seminar.lector.all.count|add:'0' == 1 %}
+            <h3 class="text-center">Лектор:</h3>
+        {% else %}
+            <h3 class="text-center">Лекторы:</h3>
+        {% endif %}
+        {% for lector in seminar.lector.all %}
+        <div class="row">
+            <div class="col-md-4">
+                <img class="lector-img-post" src="{{ lector.photo.url }}" alt="Фото">
+            </div>
+            <div class="col-md-8">
+                <p>
+                    {% autoescape off %}
+                    {{ lector.description }}
+                    {% endautoescape %}
+                </p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+<!-- Lector info -->
+
+<!-- Map -->
+{% if not seminar.is_finished %}
+<div class="container default-padding text-center">
+    <h3 class="default-padding-bottom">
+        Место проведения:
+    </h3>
+    {% autoescape off %}
+    {{ seminar.place.embed_code }}
+    {% endautoescape %}
+</div>
+<!-- Map -->
+
+<!-- Gallery -->
+{% else %}
+{% if photo_list %}
+<div class="container default-padding">
+    <h3 class="default-padding-bottom">
+        Галерея:
+    </h3>
+
+    {% for item in gallery %}
+        {% if item.video_youtube %}
+        <div class="row mb-5">
+            <div class="col-md-3 col-sm-12"></div>
+            <div class="col-md-6 col-sm-12 embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="{{ item.video_youtube }}" frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen></iframe>
+            </div>
+            <div class="col-md-3 col-sm-12"></div>
+        </div>
+        {% endif %}
+    
+        {% if item.video %}
+        <div class="row mb-5">
+            <div class="col-md-3 col-sm-12"></div>
+            <div class="col-md-6 col-sm-12 text-center">
+                <video width="100%" height="auto" controls>
+                    <source src="{{ item.video.url }}" type="video/mp4">
+                </video>
+            </div>
+            <div class="col-md-3 col-sm-12"></div>
+        </div>
+        {% endif %}
+    {% endfor %}
+
+    <div class="row">
+        {% for photo in photo_list %}
+        <div class="col-md-2 col-sm-12 item gal">
+            <a href="{{ photo.images.url }}" class="fancybox p-2" data-fancybox="gallery1">
+                <img
+                        class="square" src="{{ photo.images.url }}" onclick="openModal();currentSlide(1)"
+                        alt="Фото">
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endif %}
+<!-- Gallery -->
+
+<script src="{% static 'js/enable_button.js' %}"></script>
+<script src='https://www.google.com/recaptcha/api.js'></script>
+
+{% else %}
+
+    <head>
+        <title>Страница не найдена</title>
+    </head>
+    
+    <div class="text-center not-found-page">
+        <h2 style="font-size:70px;">404</h2>
+        <h3 class="mb-4">Страница не найдена</h3>
+        <a href="{% url 'home' %}" class="btn blue-btn">Главная страница</a>
+    </div>
+    
+{% endif %}
+
+{% endblock content %}
