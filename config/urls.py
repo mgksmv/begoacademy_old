@@ -3,12 +3,12 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from .views import home, contacts
+from .views import HomeListView, contacts
 from seminars.views import past_seminars, seminar_detail
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', home, name='home'),
+    path('', HomeListView.as_view(), name='home'),
     path('seminars/', include('seminars.urls')),
     path('past-seminars/', include('seminars.past_urls')),
     path('individual/', include('individual.urls')),
