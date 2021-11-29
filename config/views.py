@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.views.generic import ListView
 from django.http import HttpResponseRedirect
 from django.core.mail import send_mail
 from django.contrib import messages
@@ -12,14 +13,10 @@ from .settings import GOOGLE_RECAPTCHA_SECRET_KEY as secret_key
 email = 'lonfyo@gmail.com'
 
 
-def home(request):
-    upcoming_seminars = Seminar.objects.filter(is_finished=False).order_by('date')[:3]
-
-    context = {
-        'seminars': upcoming_seminars,
-    }
-
-    return render(request, 'main/home.html', context)
+class HomeListView(ListView):
+    queryset = Seminar.objects.filter(is_finished=False, is_published=True).order_by('date')[:3]
+    context_object_name = 'seminars'
+    template_name = 'main/home.html'
 
 
 def contacts(request):
