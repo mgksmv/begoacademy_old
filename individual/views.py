@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404
+from django.views.generic import ListView
 from django.http import HttpResponseRedirect
 from django.core.mail import send_mail
 from django.contrib import messages
@@ -14,34 +15,22 @@ EMAIL_FROM = config('EMAIL_FROM')
 EMAIL_TO = config('EMAIL_TO')
 
 
-def for_dentists(request):
-    dentist_individual = Individual.objects.filter(category='Для стоматологов', is_published=True)
+class ForDentistsListView(ListView):
+    queryset = Individual.objects.filter(category='Для стоматологов', is_published=True)
+    context_object_name = 'dentist_individual'
+    template_name = 'individual/for_dentists.html'
+    
+   
+class ForTechListView(ListView):
+    queryset = Individual.objects.filter(category='Для техников', is_published=True)
+    context_object_name = 'tech_individual'
+    template_name = 'individual/for_tech.html'
+    
 
-    context = {
-        'dentist_individual': dentist_individual,
-    }
-
-    return render(request, 'individual/for_dentists.html', context)
-
-
-def for_tech(request):
-    tech_individual = Individual.objects.filter(category='Для техников', is_published=True)
-
-    context = {
-        'tech_individual': tech_individual,
-    }
-
-    return render(request, 'individual/for_tech.html', context)
-
-
-def for_clinics(request):
-    clinic_individual = Individual.objects.filter(category='Для клиник', is_published=True)
-
-    context = {
-        'clinic_individual': clinic_individual,
-    }
-
-    return render(request, 'individual/for_clinics.html', context)
+class ForClinicsListView(ListView):
+    queryset = Individual.objects.filter(category='Для клиник', is_published=True)
+    context_object_name = 'clinic_individual'
+    template_name = 'individual/for_clinics.html'
 
 
 def individual_page(request, individual_url):
