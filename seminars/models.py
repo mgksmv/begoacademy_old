@@ -96,6 +96,7 @@ class Seminar(models.Model):
     participants = models.CharField(max_length=200, blank=True, verbose_name='Количество участников')
     additional_info = models.CharField(max_length=200, blank=True, verbose_name='Дополнительная инфа')
     url = models.SlugField(max_length=50, unique=True, verbose_name='URL')
+    is_only_for_bego = models.BooleanField(verbose_name='Только для коллектива BEGO', help_text='Отметьте, если семинар проводится только для коллектива BEGO.')
     is_finished = models.BooleanField(verbose_name='Завершён', help_text='Отметьте, если семинар завершён.')
     is_published = models.BooleanField(verbose_name='Опубликовать', default=True, help_text='Если снять галочку, то страница семинара станет черновиком и не будет отображаться на сайте.')
 
