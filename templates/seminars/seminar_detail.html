@@ -61,6 +61,10 @@
     <h4 class="additional-info">
         {{ seminar.additional_info }}
     </h4>
+    {% elif seminar.is_only_for_bego %}
+    <h4 class="additional-info">
+        Только для коллектива BEGO
+    </h4>
     {% endif %}
     <h3 class="default-padding-bottom">
         {{ seminar.title }}
@@ -70,6 +74,24 @@
             <p>
                 {% autoescape off %}
                 {{ seminar.content }}
+                {% if seminar.id == 53 %}
+                <div class="pt-2">
+                    <div class="row mb-5">
+                        <div class="col-sm-12"></div>
+                            <div class="col-sm-12">
+                                <iframe src="https://www.youtube.com/embed/iQLQQBbGOjo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                <iframe src="https://www.youtube.com/embed/6P3Iw8WLues" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                <iframe src="https://www.youtube.com/embed/qxytjcKCKII" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            </div>
+                        <div class="col-sm-12"></div>
+                    </div>
+                    
+                    <!--<iframe class="embed-responsive-item" src="https://www.youtube.com/embed/iQLQQBbGOjo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>-->
+                    <!--<iframe class="embed-responsive-item" src="https://www.youtube.com/embed/6P3Iw8WLues" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>-->
+                    <!--<iframe class="embed-responsive-item" src="https://www.youtube.com/embed/qxytjcKCKII" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>-->
+                
+                </div>
+                {% endif %}
                 {% endautoescape %}
             </p>
         </div>
@@ -143,22 +165,24 @@
                     </ul>
                 </div>
                 {% else %}
-                <form class="card contact-form" action="" method="post">
-                    <h4 class="pb-3">
-                        Записаться
-                    </h4>
-                    {% csrf_token %}
-                    {{ form|crispy }}
-                    {% if messages %}
-                    <ul class="messages">
-                        {% for message in messages %}
-                        <li  {% if message.tags %} class="{{ message.tags }} text-danger" {% endif %}> {{ message }} </li>
-                        {% endfor %}
-                    </ul>
+                    {% if not seminar.is_only_for_bego %}
+                        <form class="card contact-form" action="" method="post">
+                            <h4 class="pb-3">
+                                Записаться
+                            </h4>
+                            {% csrf_token %}
+                            {{ form|crispy }}
+                            {% if messages %}
+                            <ul class="messages">
+                                {% for message in messages %}
+                                <li  {% if message.tags %} class="{{ message.tags }} text-danger" {% endif %}> {{ message }} </li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                            <div class="g-recaptcha" data-sitekey="6LeRex4bAAAAAKiFc5zQdL1pZJ1q6Ue13lTluMrR" data-callback="enableBtn" data-expired-callback="disableBtn"></div>
+                            <button type="submit" class="btn blue-btn" id="recaptcha-submit" disabled>Подтвердите, что Вы не робот</button>
+                        </form>
                     {% endif %}
-                    <div class="g-recaptcha" data-sitekey="6LeRex4bAAAAAKiFc5zQdL1pZJ1q6Ue13lTluMrR" data-callback="enableBtn" data-expired-callback="disableBtn"></div>
-                    <button type="submit" class="btn blue-btn" id="recaptcha-submit" disabled>Подтвердите, что Вы не робот</button>
-                </form>
                 {% endif %}
             {% endif %}
         </div>
@@ -194,6 +218,7 @@
 
 <!-- Map -->
 {% if not seminar.is_finished %}
+{% if seminar.place.embed_code %}
 <div class="container default-padding text-center">
     <h3 class="default-padding-bottom">
         Место проведения:
@@ -202,6 +227,7 @@
     {{ seminar.place.embed_code }}
     {% endautoescape %}
 </div>
+{% endif %}
 <!-- Map -->
 
 <!-- Gallery -->
