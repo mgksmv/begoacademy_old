@@ -1,127 +1,92 @@
 {% extends 'main/base.html' %}
-{% block content %}
 {% load static %}
 {% load crispy_forms_filters %}
 
-{% if individual.is_published %}
+{% block title %}{{ individual.title|truncatechars:100 }}{% endblock title %}
 
-<head>
-    <title>{{ individual.title|truncatechars:100 }}</title>
-</head>
+{% block content %}
 
-<!-- Breadcrumb -->
-<div class="breadcrumb-nav">
-    <div class="container">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Главная</a></li>
-                {% if individual.category == 'Для стоматологов' %}
-                <li class="breadcrumb-item"><a href="{% url 'for_dentists' %}">Индивидуальное обучение для стоматологов</a></li>
-                {% elif individual.category == 'Для техников' %}
-                <li class="breadcrumb-item"><a href="{% url 'for_tech' %}">Индивидуальное обучение для техников</a></li>
-                {% elif individual.category == 'Для клиник' %}
-                <li class="breadcrumb-item"><a href="{% url 'for_clinics' %}">Индивидуальное обучение для клиник</a></li>
-                {% endif %}
-                <li class="breadcrumb-item active" aria-current="page">{{ individual.title }}</li>
-            </ol>
-        </nav>
-    </div>
-</div>
-<!-- Breadcrumb -->
-
-<div class="container default-padding">
-    {% if submitted %}
-    <div class="text-center contact-background mb-5 rounded">
-        <h4>
-            Ваша заявка принята!
-        </h4>
-        <p>
-            Мы вам перезвоним для уточнения деталей
-        </p>
-    </div>
-    {% endif %}
-    {% if invalid_captcha %}
-    <div class="text-center invalid-captcha-background mb-5 rounded">
-        <h4>
-            Форма не принята!
-        </h4>
-        <p>
-            Подтвердите, что Вы не робот.
-        </p>
-    </div>
-    {% endif %}
-    <h3 class="default-padding-bottom">
-        {{ individual.title }}<br>
-        {% if individual.doctor %}
-        Доктор: {{ individual.doctor }}
-        {% endif %}
-    </h3>
-    <div class="row">
-        <div class="col-md-8 col-md-pr-50">
-            <p>
-                {% autoescape off %}
-                {{ individual.content }}
-                {% endautoescape %}
-            </p>
-        </div>
-        <div class="col-md-4">
-            <form class="card contact-form" action="" method="post">
-                <h4 class="pb-3">
-                    Записаться
-                </h4>
-                {% csrf_token %}
-                {{ form|crispy }}
-                {% if messages %}
-                <ul class="messages">
-                    {% for message in messages %}
-                    <li  {% if message.tags %} class="{{ message.tags }} text-danger" {% endif %}> {{ message }} </li>
-                    {% endfor %}
-                </ul>
-                {% endif %}
-                <div class="g-recaptcha" data-sitekey="6LeRex4bAAAAAKiFc5zQdL1pZJ1q6Ue13lTluMrR" data-callback="enableBtn" data-expired-callback="disableBtn"></div>
-                <button type="submit" class="btn blue-btn" id="recaptcha-submit" disabled>Подтвердите, что Вы не робот</button>
-            </form>
+    <!-- Breadcrumb -->
+    <div class="breadcrumb-nav">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Главная</a></li>
+                    {% if individual.category == 'Для стоматологов' %}
+                        <li class="breadcrumb-item"><a href="{% url 'for_dentists' %}">Индивидуальное обучение для
+                            стоматологов</a></li>
+                    {% elif individual.category == 'Для техников' %}
+                        <li class="breadcrumb-item"><a href="{% url 'for_tech' %}">Индивидуальное обучение для
+                            техников</a></li>
+                    {% elif individual.category == 'Для клиник' %}
+                        <li class="breadcrumb-item"><a href="{% url 'for_clinics' %}">Индивидуальное обучение для
+                            клиник</a></li>
+                    {% endif %}
+                    <li class="breadcrumb-item active" aria-current="page">{{ individual.title }}</li>
+                </ol>
+            </nav>
         </div>
     </div>
-</div>
+    <!-- Breadcrumb -->
 
-<!-- Lector info -->
-{% if individual.doctor %}
-<div class="breadcrumb-nav">
     <div class="container default-padding">
-        <h3>О докторе:</h3>
+        {% if messages %}
+            {% include 'includes/messages.html' %}
+        {% endif %}
+        <h3 class="default-padding-bottom">
+            {{ individual.title }}<br>
+            {% if individual.doctor %}
+                Доктор: {{ individual.doctor }}
+            {% endif %}
+        </h3>
         <div class="row">
-            <div class="col-md-4">
-                <img class="lector-img-post" src="{{ individual.doctor.photo.url }}" alt="Фото">
-            </div>
-            <div class="col-md-8">
+            <div class="col-md-8 col-md-pr-50">
                 <p>
                     {% autoescape off %}
-                    {{ individual.doctor.description }}
+                        {{ individual.content }}
                     {% endautoescape %}
                 </p>
             </div>
+            <div class="col-md-4">
+                <form class="card contact-form" action="" method="post">
+                    <h4 class="pb-3">
+                        Записаться
+                    </h4>
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <div class="g-recaptcha" data-sitekey="6LeEMHsgAAAAAG9l65Exk3yAquK2PGKkVwhPG3sV"
+                         data-callback="enableBtn" data-expired-callback="disableBtn"></div>
+                    <button type="submit" class="btn blue-btn" id="recaptcha-submit" disabled>Подтвердите, что Вы не
+                        робот
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
-</div>
-{% endif %}
-<!-- Lector info -->
 
-<script src="{% static 'js/enable_button.js' %}"></script>
-<script src='https://www.google.com/recaptcha/api.js'></script>
+    <!-- Lector info -->
+    {% if individual.doctor %}
+        <div class="breadcrumb-nav">
+            <div class="container default-padding">
+                <h3>О докторе:</h3>
+                <div class="row">
+                    <div class="col-md-4">
+                        <img class="lector-img-post" src="{{ individual.doctor.photo.url }}" alt="Фото">
+                    </div>
+                    <div class="col-md-8">
+                        <p>
+                            {% autoescape off %}
+                                {{ individual.doctor.description }}
+                            {% endautoescape %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    <!-- Lector info -->
 
-{% else %}
-
-    <head>
-        <title>Страница не найдена</title>
-    </head>
-    
-    <div class="text-center not-found-page">
-        <h2 style="font-size:70px;">404</h2>
-        <h3 class="mb-4">Страница не найдена</h3>
-        <a href="{% url 'home' %}" class="btn blue-btn">Главная страница</a>
-    </div>
-
-{% endif %}
+    <script src="{% static 'js/enable_button.js' %}"></script>
+    <script src='https://www.google.com/recaptcha/api.js'></script>
 
 {% endblock content %}

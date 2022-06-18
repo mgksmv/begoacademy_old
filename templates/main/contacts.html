@@ -1,98 +1,89 @@
 {% extends 'main/base.html' %}
-{% block content %}
 {% load static %}
 {% load crispy_forms_filters %}
 
-<head>
-    <title>Контакты</title>
-</head>
+{% block title %}Контакты{% endblock title %}
 
-<!--Breadcrumb-->
-<div class="breadcrumb-nav">
-    <div class="container">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Главная</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Контакты</li>
-            </ol>
-        </nav>
-    </div>
-</div>
-<!--Breadcrumb-->
+{% block content %}
 
-<div class="container default-padding">
-    {% if submitted %}
-    <div class="text-center contact-background mb-5 rounded">
-        <h4>
-            Спасибо!
-        </h4>
-        <p>
-            Мы получили ваше сообщение.
-        </p>
-    </div>
-    {% endif %}
-    {% if invalid_captcha %}
-    <div class="text-center invalid-captcha-background mb-5 rounded">
-        <h4>
-            Форма не принята!
-        </h4>
-        <p>
-            Подтвердите, что Вы не робот.
-        </p>
-    </div>
-    {% endif %}
-    <div class="row">
-        <div class="col-md-12">
-            <iframe class="col-md-12 map"
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2919.459963499817!2d47.487211567722674!3d42.96858360000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x404ea0554c8177a5%3A0x693c7d8b6e249f1e!2z0KHRgtC-0LzQsNGC0L7Qu9C-0LPQuNGH0LXRgdC60LDRjyDQutC70LjQvdC40LrQsCBCRUdP!5e0!3m2!1sen!2sru!4v1614001175422!5m2!1sen!2sru"
-                    width="500" height="500" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
-            <h4 class="pt-3">г. Махачкала, ул. Аскерханова, д. 1В</h4>
+    <!--Breadcrumb-->
+    <div class="breadcrumb-nav">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Главная</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Контакты</li>
+                </ol>
+            </nav>
         </div>
-        <!--<div class="col-md-6">-->
-        <!--    <iframe class="col-md-12 map"-->
-        <!--            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2064.9446926056503!2d47.565294354153956!3d42.95145550142468!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x404ea19efb7195d3%3A0x882057a836297a0!2z0KHRgtC-0LzQsNGC0L7Qu9C-0LPQuNGH0LXRgdC60LDRjyDQutC70LjQvdC40LrQsCBCRUdP!5e0!3m2!1sen!2sru!4v1614001090394!5m2!1sen!2sru"-->
-        <!--            width="500" height="500" style="border:0;" allowfullscreen="" loading="lazy"></iframe>-->
-        <!--    <h4 class="pt-3">г. Махачкала, ул. Хурукринская, д. 7</h4>-->
-        <!--</div>-->
     </div>
-    <div class="row mt-5">
-        <div class="col-md-6 form">
-            <form class="card contact-form" action="{% url 'contacts' %}" method="post">
-                <h4 class="pb-3">
-                    Обратная связь
+    <!--Breadcrumb-->
+
+    <div class="container default-padding">
+        {% if messages %}
+            {% include 'includes/messages.html' %}
+        {% endif %}
+        {% if invalid_captcha %}
+            <div class="text-center invalid-captcha-background mb-5 rounded">
+                <h4>
+                    Форма не принята!
                 </h4>
-                {% csrf_token %}
-                {{ form|crispy }}
-                {% if messages %}
-                <ul class="messages">
-                    {% for message in messages %}
-                    <li  {% if message.tags %} class="{{ message.tags }} text-danger" {% endif %}> {{ message }} </li>
-                    {% endfor %}
-                </ul>
-                {% endif %}
-                <div class="g-recaptcha" data-sitekey="6LeRex4bAAAAAKiFc5zQdL1pZJ1q6Ue13lTluMrR" data-callback="enableBtn" data-expired-callback="disableBtn"></div>
-                <button type="submit" class="btn blue-btn" id="recaptcha-submit" disabled>Подтвердите, что Вы не робот</button>
-            </form>
+                <p>
+                    Подтвердите, что Вы не робот.
+                </p>
+            </div>
+        {% endif %}
+        <div class="row">
+            <div class="col-md-12">
+                <iframe class="col-md-12 map"
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2919.459963499817!2d47.487211567722674!3d42.96858360000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x404ea0554c8177a5%3A0x693c7d8b6e249f1e!2z0KHRgtC-0LzQsNGC0L7Qu9C-0LPQuNGH0LXRgdC60LDRjyDQutC70LjQvdC40LrQsCBCRUdP!5e0!3m2!1sen!2sru!4v1614001175422!5m2!1sen!2sru"
+                        width="500" height="500" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                <h4 class="pt-3">г. Махачкала, ул. Аскерханова, д. 1В</h4>
+            </div>
         </div>
-        <div class="col-md-6 text-center mt-4">
-            <h4 class="pb-3">Наши контакты:</h4>
-            <p class="mb-0">
-                <b><i class="fas fa-phone-alt"></i> Телефон:  </b><a href="tel:+79634193636">8 (963) 419-36-36</a>
-            </p>
-            <p>
-                <b><i class="fas fa-at"></i> Email:  </b><a href="mailto:begoacademy@gmail.com">begoacademy@gmail.com<br></a>
-            </p>
-            <p class="mb-0">
-                <b><i class="fas fa-map-marker-alt"></i> Адрес: </b>
-            </p>
-            <p>
-                г. Махачкала, ул. Аскерханова, 1В
-            </p>
+        <div class="row mt-5">
+            <div class="col-md-6 form">
+                <form class="card contact-form" action="{% url 'contacts' %}" method="post">
+                    <h4 class="pb-3">
+                        Обратная связь
+                    </h4>
+                    {% csrf_token %}
+                    {{ form|crispy }}
+{#                    {% if messages %}#}
+{#                        <ul class="messages">#}
+{#                            {% for message in messages %}#}
+{#                                {% if message.tags == 'error' %}#}
+{#                                    <li class="text-danger">{{ message }}</li>#}
+{#                                {% endif %}#}
+{#                            {% endfor %}#}
+{#                        </ul>#}
+{#                    {% endif %}#}
+                    <div class="g-recaptcha" data-sitekey="6LeEMHsgAAAAAG9l65Exk3yAquK2PGKkVwhPG3sV"
+                         data-callback="enableBtn" data-expired-callback="disableBtn"></div>
+                    <button type="submit" class="btn blue-btn" id="recaptcha-submit" disabled>Подтвердите, что Вы не
+                        робот
+                    </button>
+                </form>
+            </div>
+            <div class="col-md-6 text-center mt-4">
+                <h4 class="pb-3">Наши контакты:</h4>
+                <p class="mb-0">
+                    <b><i class="fas fa-phone-alt"></i> Телефон:  </b><a href="tel:+79634193636">8 (963) 419-36-36</a>
+                </p>
+                <p>
+                    <b><i class="fas fa-at"></i> Email:  </b><a href="mailto:begoacademy@gmail.com">begoacademy@gmail.com<br></a>
+                </p>
+                <p class="mb-0">
+                    <b><i class="fas fa-map-marker-alt"></i> Адрес: </b>
+                </p>
+                <p>
+                    г. Махачкала, ул. Аскерханова, 1В
+                </p>
+            </div>
         </div>
     </div>
-</div>
 
-<script src="{% static 'js/enable_button.js' %}"></script>
-<script src='https://www.google.com/recaptcha/api.js'></script>
+    <script src="{% static 'js/enable_button.js' %}"></script>
+    <script src='https://www.google.com/recaptcha/api.js'></script>
 
 {% endblock content %}

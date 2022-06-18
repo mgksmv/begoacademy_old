@@ -3,18 +3,19 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from .views import HomeListView, contacts
-from seminars.views import past_seminars, seminar_detail
+from .settings import DEBUG
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', HomeListView.as_view(), name='home'),
+    path('', include('main.urls')),
     path('seminars/', include('seminars.urls')),
     path('past-seminars/', include('seminars.past_urls')),
     path('individual/', include('individual.urls')),
     path('lectors/', include('lectors.urls')),
     path('gallery/', include('gallery.urls')),
-    path('contacts/', contacts, name='contacts'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-handler404 = 'config.views.error_404'
+if DEBUG:
+    urlpatterns += [path('__debug__/', include('debug_toolbar.urls'))]
+
+handler404 = 'main.views.error_404'

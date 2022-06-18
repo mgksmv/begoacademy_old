@@ -1,10 +1,11 @@
 from django.db import models
+from django.core.validators import RegexValidator
 
 
 class Registration(models.Model):
     seminar_name = models.CharField(max_length=200, verbose_name='Название семинара')
     name = models.CharField(max_length=200, verbose_name='ФИО')
-    phone_number = models.CharField(max_length=15, verbose_name='Номер телефона')
+    phone_number = models.CharField(max_length=15, verbose_name='Номер телефона', validators=[RegexValidator(r'^\+?\d{8,15}$')])
     date_created = models.DateTimeField(auto_now_add=True, verbose_name='Дата')
 
     class Meta:
@@ -18,7 +19,7 @@ class Registration(models.Model):
 class Individual(models.Model):
     individual_name = models.CharField(max_length=200, verbose_name='Название')
     name = models.CharField(max_length=200, verbose_name='ФИО')
-    phone_number = models.CharField(max_length=15, verbose_name='Номер телефона')
+    phone_number = models.CharField(max_length=15, verbose_name='Номер телефона', validators=[RegexValidator(r'^\+?\d{8,15}$')])
     date_created = models.DateTimeField(auto_now_add=True, verbose_name='Дата')
 
     class Meta:
@@ -32,7 +33,7 @@ class Individual(models.Model):
 class Lector(models.Model):
     lector_name = models.CharField(max_length=200, verbose_name='Лектор')
     name = models.CharField(max_length=200, verbose_name='ФИО')
-    phone_number = models.CharField(max_length=15, verbose_name='Номер телефона')
+    phone_number = models.CharField(max_length=15, verbose_name='Номер телефона', validators=[RegexValidator(r'^\+?\d{8,15}$')])
     email = models.EmailField(max_length=200, blank=True, verbose_name='Email (не обязательно)')
     date_created = models.DateTimeField(auto_now_add=True, verbose_name='Дата')
 

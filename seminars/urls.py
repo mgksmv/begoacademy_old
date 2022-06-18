@@ -1,8 +1,8 @@
 from django.urls import path
-from seminars.views import all_seminars, seminar_detail
+from seminars.views import SeminarsListView, SeminarDetailView
 
 urlpatterns = [
-    path('', all_seminars, name='all_seminars'),
-    path('<slug:seminar_url>/', seminar_detail, name='seminar_detail'),
-    path('category/<slug:category_url>/', all_seminars, name='seminar_by_category'),
+    path('', SeminarsListView.as_view(), name='all_seminars'),
+    path('<slug:url>/', SeminarDetailView.as_view(), name='seminar_detail'),
+    path('category/<slug:category_url>/', SeminarsListView.as_view(), name='seminar_by_category'),
 ]

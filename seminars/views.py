@@ -1,175 +1,133 @@
-from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponseRedirect
-from django.core.mail import send_mail
-from django.core.paginator import Paginator
-from django.contrib import messages
-from datetime import datetime
-from decouple import config
 import urllib.request
 import json
+from datetime import datetime
+from django.views.generic import ListView, DetailView
+from django.views.generic.edit import FormMixin
+from django.shortcuts import get_object_or_404
+from django.db.models import Prefetch
+from django.contrib import messages
 
-from .models import Seminar, Category, NewOrganizer, OrganizerNumbers, OrganizerWhatsAppNumbers
-from gallery.models import Gallery, PostImage
+from config.settings import GOOGLE_RECAPTCHA_SECRET_KEY as secret_key, TO_EMAIL
 from main.forms import RegistrationForm
-from config.settings import GOOGLE_RECAPTCHA_SECRET_KEY as secret_key
+from main.tasks import send_mail_task
+from lectors.models import Lector
+from gallery.models import Gallery, PostImage
+from .models import Seminar, Category
 
-EMAIL_FROM = config('EMAIL_FROM')
-EMAIL_TO = config('EMAIL_TO')
 
+class SeminarsListView(ListView):
+    model = Seminar
+    paginate_by = 10
+    template_name = 'seminars/all_seminars.html'
 
-def all_seminars(request, category_url=None):
-    seminars = None
-    categories = None
-    active_category = None
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
 
-    if category_url == None:
-        seminars = Seminar.objects.filter(is_finished=False, is_published=True).order_by('date')
+        current_path = self.request.path
+        if current_path.split('/')[1] == 'past-seminars':
+            is_finished = True
+        else:
+            is_finished = False
+
+        category_url = self.kwargs.get('category_url')
+
+        seminars = Seminar.objects.order_by('date') \
+            .select_related('organizer', 'place') \
+            .prefetch_related(
+                Prefetch('category', queryset=Category.objects.all()),
+                Prefetch('lector', queryset=Lector.objects.all().only('name', 'photo')),
+            ) \
+            .defer('content', 'place__embed_code')
+
+        if not category_url:
+            seminars = seminars.filter(is_finished=is_finished, is_published=True)
+            active_category = 1
+        else:
+            categories = get_object_or_404(Category, url=category_url)
+            seminars = seminars.filter(category=categories, is_finished=is_finished, is_published=True)
+            active_category = Category.objects.get(url=category_url)
+
         seminar_count = seminars.count()
-        active_category = 1
-    else:
-        categories = get_object_or_404(Category, url=category_url)
-        seminars = Seminar.objects.filter(category=categories, is_finished=False, is_published=True).order_by('date')
-        seminar_count = seminars.count()
-        active_category = Category.objects.get(url=category_url)
 
-    paginator = Paginator(seminars, 10)
-    page_number = request.GET.get('page', 1)
-    page = paginator.get_page(page_number)
+        context['object_list'] = seminars
+        context['seminar_count'] = seminar_count
+        context['active_category'] = active_category
 
-    if page.has_next():
-        next_url = f'?page={page.next_page_number()}'
-    else:
-        next_url = ''
-
-    if page.has_previous():
-        prev_url = f'?page={page.previous_page_number()}'
-    else:
-        prev_url = ''
-
-    context = {
-        'seminars': page,
-        'active_category': active_category,
-        'seminar_count': seminar_count,
-        'next_page_url': next_url,
-        'prev_page_url': prev_url,
-    }
-
-    return render(request, 'seminars/all_seminars.html', context)
+        return context
 
 
-def seminar_detail(request, seminar_url):
-    seminar = get_object_or_404(Seminar, url=seminar_url)
-    organizers = NewOrganizer.objects.all()
-    organizer_numbers = OrganizerNumbers.objects.all()
-    organizer_whatsapp_numbers = OrganizerWhatsAppNumbers.objects.all()
-    
-    gallery = Gallery.objects.filter(seminar=seminar)
-    photo_list = PostImage.objects.filter(gallery__seminar=seminar)
+class SeminarDetailView(FormMixin, DetailView):
+    model = Seminar
+    form_class = RegistrationForm
+    slug_field = 'url'
+    slug_url_kwarg = 'url'
+    template_name = 'seminars/seminar_detail.html'
 
-    form = RegistrationForm()
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
 
-    name = None
-    invalid_captcha = False
-    submitted = False
-    
-    today = datetime.today().date()
-    seminar_date = seminar.date
+        gallery = Gallery.objects.filter(seminar=self.object)
+        photo_list = PostImage.objects.filter(gallery__seminar=self.object)
 
-    remaining = seminar_date - today
+        today = datetime.today().date()
+        seminar_date = self.object.date
+        remaining = seminar_date - today
 
-    if request.method == 'POST':
-        form = RegistrationForm(request.POST)
-        form.fields['seminar_name'].initial = seminar.title
+        context['gallery'] = gallery
+        context['photo_list'] = photo_list
+        context['remaining'] = remaining
 
-        seminar_name = request.POST['seminar_name']
-        name = request.POST['name']
-        phone_number = request.POST['phone_number']
+        return context
 
-        send_mail(
+    def get_form(self, *args, **kwargs):
+        form = super().get_form(*args, **kwargs)
+        form.fields['seminar_name'].initial = self.object.title
+        form.fields['seminar_name'].widget.attrs['readonly'] = True
+        return form
+
+    def get_success_url(self):
+        return self.request.path_info
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    def form_valid(self, form):
+        seminar_name = form.cleaned_data.get('seminar_name')
+        name = form.cleaned_data.get('name')
+        phone_number = form.cleaned_data.get('phone_number')
+
+        send_mail_task.delay(
             'Запись на семинар',
             f'Семинар: {seminar_name}\nИмя: {name}\nТелефон: {phone_number}',
-            EMAIL_FROM,
-            [EMAIL_TO]
+            TO_EMAIL
         )
-            
-        if form.is_valid():
-            recaptcha_response = request.POST.get('g-recaptcha-response')
-            url = 'https://www.google.com/recaptcha/api/siteverify'
-            values = {
-                'secret': secret_key,
-                'response': recaptcha_response
-            }
-            data = urllib.parse.urlencode(values).encode()
-            req =  urllib.request.Request(url, data=data)
-            response = urllib.request.urlopen(req)
-            result = json.loads(response.read().decode())
-    
-            if result['success']:
-                form.save()
-                return HttpResponseRedirect(f'{request.path_info}?submitted=True')
-            else:
-                messages.success(request, 'Подтвердите, что Вы не робот.')
-                invalid_captcha = True
 
-    else:
-        form = RegistrationForm()
-        form.fields['seminar_name'].initial = seminar.title
-        form.fields['seminar_name'].widget.attrs['readonly'] = True
-        if 'submitted' in request.GET:
-            submitted = True
+        recaptcha_response = self.request.POST.get('g-recaptcha-response')
+        url = 'https://www.google.com/recaptcha/api/siteverify'
+        values = {
+            'secret': secret_key,
+            'response': recaptcha_response
+        }
+        data = urllib.parse.urlencode(values).encode()
+        req = urllib.request.Request(url, data=data)
+        response = urllib.request.urlopen(req)
+        result = json.loads(response.read().decode())
 
-    context = {
-        'seminar': seminar,
-        'organizers': organizers,
-        'organizer_numbers': organizer_numbers,
-        'organizer_whatsapp_numbers': organizer_whatsapp_numbers,
-        'form': form,
-        'message_name': name,
-        'invalid_captcha': invalid_captcha,
-        'submitted': submitted,
-        'gallery': gallery,
-        'photo_list': photo_list,
-        'remaining': remaining,
-    }
+        if result['success']:
+            form.save()
+            messages.success(self.request, 'Ваша заявка принята! Мы вам перезвоним для уточнения деталей.')
+        else:
+            messages.error(self.request, 'Подтвердите, что Вы не робот.')
 
-    return render(request, 'seminars/seminar_detail.html', context)
+        return super().form_valid(form)
 
-
-def past_seminars(request, category_url=None):
-    seminars = None
-    categories = None
-    active_category = None
-
-    if category_url == None:
-        seminars = Seminar.objects.filter(is_finished=True, is_published=True)
-        seminar_count = seminars.count()
-        active_category = 1
-    else:
-        categories = get_object_or_404(Category, url=category_url)
-        seminars = Seminar.objects.filter(category=categories, is_finished=True, is_published=True)
-        seminar_count = seminars.count()
-        active_category = Category.objects.get(url=category_url)
-
-    paginator = Paginator(seminars, 10)
-    page_number = request.GET.get('page', 1)
-    page = paginator.get_page(page_number)
-
-    if page.has_next():
-        next_url = f'?page={page.next_page_number()}'
-    else:
-        next_url = ''
-
-    if page.has_previous():
-        prev_url = f'?page={page.previous_page_number()}'
-    else:
-        prev_url = ''
-
-    context = {
-        'seminars': page,
-        'active_category': active_category,
-        'seminar_count': seminar_count,
-        'next_page_url': next_url,
-        'prev_page_url': prev_url,
-    }
-
-    return render(request, 'seminars/past_seminars.html', context)
+    def form_invalid(self, form):
+        for field in form:
+            for error in field.errors:
+                messages.error(self.request, error)
+        return super().form_invalid(form)

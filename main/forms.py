@@ -9,6 +9,11 @@ class RegistrationForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'placeholder': 'Ваши фамилия, имя, отчество'}),
             'phone_number': forms.TextInput(attrs={'placeholder': 'Ваш номер телефона'}),
         }
+        error_messages = {
+            'phone_number': {
+                'invalid': 'В номере могут быть только числа, знак "+" и как минимум 8 цифр!'
+            }
+        }
         fields = '__all__'
 
 
@@ -18,6 +23,11 @@ class IndividualForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': 'Ваши фамилия, имя, отчество'}),
             'phone_number': forms.TextInput(attrs={'placeholder': 'Ваш номер телефона'}),
+        }
+        error_messages = {
+            'phone_number': {
+                'invalid': 'В номере могут быть только числа, знак "+" и как минимум 8 цифр!'
+            }
         }
         fields = '__all__'
 
@@ -29,6 +39,11 @@ class LectorForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'placeholder': 'Ваши фамилия, имя, отчество'}),
             'phone_number': forms.TextInput(attrs={'placeholder': 'Ваш номер телефона'}),
             'email': forms.TextInput(attrs={'placeholder': 'Ваш Email'}),
+        }
+        error_messages = {
+            'phone_number': {
+                'invalid': 'В номере могут быть только числа, знак "+" и как минимум 8 цифр!'
+            }
         }
         fields = '__all__'
 

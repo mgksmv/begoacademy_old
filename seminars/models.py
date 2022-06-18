@@ -49,8 +49,6 @@ class Category(models.Model):
     icon = models.ImageField(upload_to='images/icons', blank=True, verbose_name='Иконка')
     url = models.SlugField(max_length=50, unique=True, verbose_name='URL')
 
-    # number = [1]
-
     def __str__(self):
         return self.category_name
 
