@@ -12,27 +12,36 @@ from config.settings import GOOGLE_RECAPTCHA_SECRET_KEY as secret_key, TO_EMAIL
 
 
 class ForDentistsListView(ListView):
-    queryset = Individual.objects.filter(category='Для стоматологов', is_published=True) \
-        .select_related('doctor') \
-        .defer('content', 'doctor__bio', 'doctor__description', 'doctor__description', 'doctor__photo')
+    model = Individual
     context_object_name = 'dentist_individual'
     template_name = 'individual/for_dentists.html'
-    
-   
+
+    def get_queryset(self):
+        return Individual.objects.filter(category='Для стоматологов', is_published=True) \
+            .select_related('doctor') \
+            .defer('content', 'doctor__bio', 'doctor__description', 'doctor__description', 'doctor__photo')
+
+
 class ForTechListView(ListView):
-    queryset = Individual.objects.filter(category='Для техников', is_published=True) \
-        .select_related('doctor') \
-        .defer('content', 'doctor__bio', 'doctor__description', 'doctor__description', 'doctor__photo')
+    model = Individual
     context_object_name = 'tech_individual'
     template_name = 'individual/for_tech.html'
-    
+
+    def get_queryset(self):
+        return Individual.objects.filter(category='Для техников', is_published=True) \
+            .select_related('doctor') \
+            .defer('content', 'doctor__bio', 'doctor__description', 'doctor__description', 'doctor__photo')
+
 
 class ForClinicsListView(ListView):
-    queryset = Individual.objects.filter(category='Для клиник', is_published=True) \
-        .select_related('doctor') \
-        .defer('content', 'doctor__bio', 'doctor__description', 'doctor__description', 'doctor__photo')
+    model = Individual
     context_object_name = 'clinic_individual'
     template_name = 'individual/for_clinics.html'
+
+    def get_queryset(self):
+        return Individual.objects.filter(category='Для клиник', is_published=True) \
+            .select_related('doctor') \
+            .defer('content', 'doctor__bio', 'doctor__description', 'doctor__description', 'doctor__photo')
 
 
 class IndividualDetailView(FormMixin, DetailView):
@@ -42,12 +51,8 @@ class IndividualDetailView(FormMixin, DetailView):
     slug_url_kwarg = 'url'
     template_name = 'individual/individual_page.html'
 
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        context = self.get_context_data(object=self.object)
-        if not self.object.is_published:
-            raise Http404
-        return self.render_to_response(context)
+    def get_queryset(self):
+        return Individual.objects.filter(is_published=True)
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -93,7 +98,7 @@ class IndividualDetailView(FormMixin, DetailView):
 
         if result['success']:
             form.save()
-            messages.success(self.request, 'Ваша заявка принята! Мы вам перезвоним для уточнения деталей.')
+            messages.success(self.request, 'Ваша заявка принята! Мы Вам перезвоним для уточнения деталей.')
         else:
             messages.error(self.request, 'Подтвердите, что Вы не робот.')
 

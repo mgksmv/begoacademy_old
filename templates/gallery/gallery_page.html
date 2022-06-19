@@ -1,79 +1,79 @@
 {% extends 'main/base.html' %}
-{% block content %}
 {% load static %}
 
-{% for item in gallery %}
-<head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.css">
+{% block title %}{{ item.seminar.title|truncatechars:100 }}{% endblock title %}
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
-    
-    <title>{{ item.seminar.title|truncatechars:100 }}</title>
-</head>
+{% block content %}
 
-<!--Breadcrumb-->
-<div class="breadcrumb-nav">
-    <div class="container">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Главная</a></li>
-                <li class="breadcrumb-item active" aria-current="page"><a href="{% url 'gallery' %}">Галерея</a></li>
-                <li class="breadcrumb-item active" aria-current="page">{{ item.seminar.title }}</li>
-            </ol>
-        </nav>
-    </div>
-</div>
-<!--Breadcrumb-->
+    <head>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.css">
 
-<div class="container default-padding">
-    <h3>
-        {% for lector in item.seminar.lector.all %}
-        {{ lector|join:", " }},
-        {% endfor %}
-    </h3>
-    <h4 class="text-center pb-3">
-        {{ item.seminar.title }}
-    </h4>
-    <div class="text-center" style="padding-bottom: 50px">
-        <a href="{{ item.seminar.get_past_url }}" class="btn blue-btn">Подробнее о прошедшем семинаре</a>
-    </div>
-    {% if item.video_youtube %}
-    <div class="row mb-5">
-        <div class="col-md-3 col-sm-12"></div>
-        <div class="col-md-6 col-sm-12 embed-responsive embed-responsive-16by9">
-            <iframe class="embed-responsive-item" src="{{ item.video_youtube }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+    </head>
+
+    <!--Breadcrumb-->
+    <div class="breadcrumb-nav">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Главная</a></li>
+                    <li class="breadcrumb-item active" aria-current="page"><a href="{% url 'gallery' %}">Галерея</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ object.seminar.title }}</li>
+                </ol>
+            </nav>
         </div>
-        <div class="col-md-3 col-sm-12"></div>
     </div>
-    {% endif %}
-    
-    {% if item.video %}
-    <div class="row mb-5">
-        <div class="col-md-3 col-sm-12"></div>
-        <div class="col-md-6 col-sm-12 text-center">
-            <video width="100%" height="auto" controls>
-                <source src="{{ item.video.url }}" type="video/mp4">
-            </video>
+    <!--Breadcrumb-->
+
+    <div class="container default-padding">
+        <h3>
+            {{ lectors }}
+        </h3>
+        <h4 class="text-center pb-2">
+            {{ object.seminar.title }}
+        </h4>
+        <h5 class="text-center">
+            <i class="far fa-calendar-alt"></i> {{ object.seminar.date|date:"d.m.Y" }}
+        </h5>
+        <div class="text-center" style="padding-bottom: 50px">
+            <a href="{{ object.seminar.get_url }}" class="btn blue-btn">Подробнее о прошедшем семинаре</a>
         </div>
-        <div class="col-md-3 col-sm-12"></div>
-    </div>
-    {% endif %}
-    
-    <div class="row">
-        {% for photo in photo_list %}
-        {% if photo.gallery.seminar == item.seminar %}
-        <div class="col-md-2 col-sm-12 item gal">
-            <a href="{{ photo.images.url }}" class="fancybox p-2" data-fancybox="gallery1">
-                <img
-                    class="square" src="{{ photo.images.url }}" onclick="openModal();currentSlide(1)"
-                    alt="Фото">
-            </a>
-        </div>
+        {% if object.video_youtube %}
+            <div class="row mb-5">
+                <div class="col-md-3 col-sm-12"></div>
+                <div class="col-md-6 col-sm-12 embed-responsive embed-responsive-16by9">
+                    <iframe class="embed-responsive-item" src="{{ object.video_youtube }}" frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen></iframe>
+                </div>
+                <div class="col-md-3 col-sm-12"></div>
+            </div>
         {% endif %}
-        {% endfor %}
-    </div>
-</div>
 
-{% endfor %}
+        {% if object.video %}
+            <div class="row mb-5">
+                <div class="col-md-3 col-sm-12"></div>
+                <div class="col-md-6 col-sm-12 text-center">
+                    <video width="100%" height="auto" controls>
+                        <source src="{{ object.video.url }}" type="video/mp4">
+                    </video>
+                </div>
+                <div class="col-md-3 col-sm-12"></div>
+            </div>
+        {% endif %}
+
+        <div class="row">
+            {% for photo in object.postimage_set.all %}
+                <div class="col-md-2 col-sm-12 item gal">
+                    <a href="{{ photo.images.url }}" class="fancybox p-2" data-fancybox="gallery1">
+                        <img class="square" src="{{ photo.images.url }}" onclick="openModal();currentSlide(1)"
+                             alt="Фото">
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
 {% endblock content %}

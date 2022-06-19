@@ -37,16 +37,6 @@
             {% if messages %}
                 {% include 'includes/messages.html' %}
             {% endif %}
-            {% if invalid_captcha %}
-                <div class="text-center invalid-captcha-background mb-5 rounded">
-                    <h4>
-                        Форма не принята!
-                    </h4>
-                    <p>
-                        Подтвердите, что Вы не робот.
-                    </p>
-                </div>
-            {% endif %}
             {% if seminar.is_finished %}
                 <h4 class="past-seminar">
                     Семинар завершён

@@ -1,83 +1,47 @@
 {% extends 'main/base.html' %}
+
+{% block title %}Галерея{% endblock title %}
+
 {% block content %}
 
-<head>
-    <title>Галерея</title>
-</head>
-
-<!--Breadcrumb-->
-<div class="breadcrumb-nav">
-    <div class="container">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Главная</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Галерея</li>
-            </ol>
-        </nav>
-    </div>
-</div>
-<!--Breadcrumb-->
-
-<div class="container default-padding">
-    <h2 class="default-padding-bottom">
-        Галерея
-    </h2>
-    
-    <nav class="mb-5" aria-label="...">
-        <ul class="pagination justify-content-center">
-            <li class="page-item {% if not prev_page_url %} disabled {% endif %}">
-                <a class="page-link" href="{{ prev_page_url }}" tabindex="-1">Пред.</a>
-            </li>
-            {% for n in gallery.paginator.page_range %}
-                {% if gallery.number == n %}
-                    <li class="page-item active">
-                        <a class="page-link" href="?page={{ n }}">{{ n }} <span class="sr-only">(текущая стр)</span></a>
-                    </li>
-                {% elif n > gallery.number|add:-5 and n < gallery.number|add:5 %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ n }}">{{ n }}</a>
-                    </li>
-                {% endif %}
-            {% endfor %}
-            <li class="page-item {% if not next_page_url %} disabled {% endif %}">
-                <a class="page-link" href="{{ next_page_url }}">След.</a>
-            </li>
-        </ul>
-    </nav>
-    
-    <div class="row">
-        {% for item in gallery %}
-        <div class="col-md-3 text-center mb-5">
-            <a href="{{ item.url }}"><img class="rounded img-thumbnail item" src="{{ item.preview_image.url }}" alt="Превью"></a>
-            {% for lector in item.seminar.lector.all %}
-            <a class="text-center" href="{{ item.url }}"><h5 class="gallery-lector">{{ lector }}</h5></a>
-            {% endfor %}
-            <h6 class="text-center pt-2 pb-2"><i class="far fa-calendar-alt"></i> {{ item.seminar.date|date:"d.m.Y" }}</h6><hr/>
-            <p class="text-center">{{ item.seminar.title }}</p>
+    <!--Breadcrumb-->
+    <div class="breadcrumb-nav">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Главная</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Галерея</li>
+                </ol>
+            </nav>
         </div>
-        {% endfor %}
     </div>
-    
-    <nav class="mt-5" aria-label="...">
-        <ul class="pagination justify-content-center">
-            <li class="page-item {% if not prev_page_url %} disabled {% endif %}">
-                <a class="page-link" href="{{ prev_page_url }}" tabindex="-1">Пред.</a>
-            </li>
-            {% for n in gallery.paginator.page_range %}
-                {% if gallery.number == n %}
-                    <li class="page-item active">
-                        <a class="page-link" href="?page={{ n }}">{{ n }} <span class="sr-only">(текущая стр)</span></a>
-                    </li>
-                {% elif n > gallery.number|add:-5 and n < gallery.number|add:5 %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ n }}">{{ n }}</a>
-                    </li>
-                {% endif %}
+    <!--Breadcrumb-->
+
+    <div class="container default-padding">
+        <h2 class="default-padding-bottom">
+            Галерея
+        </h2>
+
+        {% include 'includes/paginator.html' %}
+
+        <div class="row">
+            {% for item in object_list %}
+                <div class="col-md-3 text-center mb-5">
+                    <a href="{{ item.url }}"><img class="rounded img-thumbnail item" src="{{ item.preview_image.url }}"
+                                                  alt="Превью"></a>
+                    {% for lector in item.seminar.lector.all %}
+                        <a class="text-center" href="{{ item.url }}"><h5 class="gallery-lector">{{ lector }}</h5></a>
+                    {% endfor %}
+                    <h6 class="text-center pt-2 pb-2"><i
+                            class="far fa-calendar-alt"></i> {{ item.seminar.date|date:"d.m.Y" }}</h6>
+                    <hr/>
+                    <p class="text-center">{{ item.seminar.title }}</p>
+                </div>
             {% endfor %}
-            <li class="page-item {% if not next_page_url %} disabled {% endif %}">
-                <a class="page-link" href="{{ next_page_url }}">След.</a>
-            </li>
-        </ul>
-    </nav>
-</div>
+        </div>
+
+        {% include 'includes/paginator.html' %}
+
+    </div>
+
 {% endblock content %}

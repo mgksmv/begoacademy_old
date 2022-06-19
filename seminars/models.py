@@ -106,9 +106,6 @@ class Seminar(models.Model):
     def get_url(self):
         return reverse('seminar_detail', args=[self.url])
 
-    def get_past_url(self):
-        return reverse('past_seminar_detail', args=[self.url])
-
     def __str__(self):
         lectors_list = []
         for lector in self.lector.all():
