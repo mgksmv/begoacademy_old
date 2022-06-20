@@ -1,5 +1,7 @@
+import main.tasks
 from pathlib import Path
 from decouple import config
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -151,6 +153,13 @@ TO_EMAIL = config('TO_EMAIL')
 
 CELERY_BROKER_URL = 'redis://redis:6379/0'
 CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
+
+CELERY_BEAT_SCHEDULE = {
+    'move_seminar_to_past_seminars': {
+        'task': 'main.tasks.move_seminar_to_past_seminars',
+        'schedule': crontab(minute=59, hour=23),
+    },
+}
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
