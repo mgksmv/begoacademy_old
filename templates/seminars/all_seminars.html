@@ -1,7 +1,7 @@
 {% extends 'main/base.html' %}
 {% load static %}
 
-{% block title %}Семинары{% endblock title %}
+{% block title %}{% if not is_finished %}Семинары{% else %}Прошедшие семинары{% endif %}{% endblock title %}
 
 {% block content %}
 
@@ -11,7 +11,7 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Главная</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Семинары</li>
+                    <li class="breadcrumb-item active" aria-current="page">{% if not is_finished %}Семинары{% else %}Прошедшие семинары{% endif %}</li>
                 </ol>
             </nav>
         </div>
@@ -20,7 +20,7 @@
 
     <div class="container default-padding">
         <h2 class="default-padding-bottom">
-            Cеминары
+            {% if not is_finished %}Семинары{% else %}Прошедшие семинары{% endif %}
         </h2>
 
         <div class="row">
@@ -28,21 +28,21 @@
                 <div class="seminar-categories">
                     <h3>Категории</h3>
                     <div class="list-group" id="category-nav">
-                        <a href="{% url 'all_seminars' %}"
+                        <a href="{% if not is_finished %}{% url 'all_seminars' %}{% else %}{% url 'past_seminars' %}{% endif %}"
                            class="list-group-item justify-content-between align-items-center">Все семинары</a>
                         {% for category in links %}
-                            <a href="{{ category.get_url }}"
+                            <a href="{% if not is_finished %}{{ category.get_url }}{% else %}{{ category.get_past_url }}{% endif %}"
                                class="list-group-item justify-content-between align-items-center {% if category.url in request.path %} active {% endif %}">{{ category }}</a>
                         {% endfor %}
                     </div>
                 </div>
                 <div id="moreDiv" style="display: none;">
                     <ul class="list-group">
-                        <a href="{% url 'all_seminars' %}"
+                        <a href="{% if not is_finished %}{% url 'all_seminars' %}{% else %}{% url 'past_seminars' %}{% endif %}"
                            class="list-group-item d-flex justify-content-between align-items-center">Все семинары<span
                                 class="badge badge-primary badge-pill">{{ category_count }}</span></a>
                         {% for category in links %}
-                            <a href="{{ category.get_url }}"
+                            <a href="{% if not is_finished %}{{ category.get_url }}{% else %}{{ category.get_past_url }}{% endif %}"
                                class="list-group-item d-flex justify-content-between align-items-center {% if category.url in request.path %} active {% endif %}">{{ category }}<span
                                     class="badge badge-primary badge-pill">{{ category_count }}</span></a>
                         {% endfor %}
@@ -69,9 +69,7 @@
                     <h6 class="text-danger">Ничего не найдено</h6>
                 {% endif %}
 
-                {% if seminar_count > 10 %}
-                    {% include 'includes/paginator.html' %}
-                {% endif %}
+                {% include 'includes/paginator.html' %}
 
                 {% for seminar in object_list %}
                     <div class="card mb-3">
@@ -93,7 +91,7 @@
                             <div class="col-md-8">
                                 <div class="card-body">
                                     {% for category in seminar.category.all %}
-                                        <a href="{{ category.get_url }}" class="badge bg-warning"># {{ category }}</a>
+                                        <a href="{% if not is_finished %}{{ category.get_url }}{% else %}{{ category.get_past_url }}{% endif %}" class="badge bg-warning"># {{ category }}</a>
                                     {% endfor %}
                                     {% for lector in seminar.lector.all %}
                                         {% if lector.id != 64 %}
@@ -128,9 +126,7 @@
                     </div>
                 {% endfor %}
 
-                {% if seminar_count > 10 %}
-                    {% include 'includes/paginator.html' %}
-                {% endif %}
+                {% include 'includes/paginator.html' %}
 
             </div>
         </div>
