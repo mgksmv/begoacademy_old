@@ -1,4 +1,6 @@
 from django.db import models
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill, Transpose
 
 from seminars.models import Seminar
 
@@ -21,6 +23,15 @@ class Gallery(models.Model):
 class PostImage(models.Model):
     gallery = models.ForeignKey(Gallery, default=None, on_delete=models.CASCADE, verbose_name='Пост')
     images = models.ImageField(upload_to='images/gallery/', verbose_name='Фото')
+    image_thumbnail = ImageSpecField(
+        source='images',
+        processors=[
+            Transpose(),
+            ResizeToFill(300, 300),
+        ],
+        format='JPEG',
+        options={'quality': 60},
+    )
 
     def __str__(self):
         return str(self.gallery.seminar.title)

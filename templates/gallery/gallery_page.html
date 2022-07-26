@@ -1,7 +1,7 @@
 {% extends 'main/base.html' %}
 {% load static %}
 
-{% block title %}{{ item.seminar.title|truncatechars:100 }}{% endblock title %}
+{% block title %}{{ object.seminar.title|truncatechars:100 }}{% endblock title %}
 
 {% block content %}
 
@@ -68,7 +68,7 @@
             {% for photo in object.postimage_set.all %}
                 <div class="col-md-2 col-sm-12 item gal">
                     <a href="{{ photo.images.url }}" class="fancybox p-2" data-fancybox="gallery1">
-                        <img class="square" src="{{ photo.images.url }}" onclick="openModal();currentSlide(1)"
+                        <img class="square" src="{{ photo.image_thumbnail.url }}" onclick="openModal();currentSlide(1)"
                              alt="Фото">
                     </a>
                 </div>
