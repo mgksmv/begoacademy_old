@@ -1,7 +1,10 @@
 import urllib.request
 import json
 from datetime import datetime
+
 from django.views.generic import ListView, DetailView
+from django.http import JsonResponse
+from django.template.loader import render_to_string
 from django.views.generic.edit import FormMixin
 from django.shortcuts import get_object_or_404
 from django.db.models import Prefetch, Count
@@ -19,6 +22,28 @@ class SeminarsListView(ListView):
     model = Seminar
     paginate_by = 10
     template_name = 'seminars/all_seminars.html'
+
+    def get(self, request, *args, **kwargs):
+        self.object_list = self.get_queryset()
+        context = self.get_context_data()
+
+        if request.is_ajax():
+            current_path = self.request.path
+            is_paginated = context['is_paginated']
+            paginator = context['paginator']
+            page_obj = context['page_obj']
+            data = render_to_string('includes/ajax/seminars_list.html', {
+                'object_list': context['object_list'],
+                'seminar_count': context['seminar_count'],
+                'active_category': context['active_category'],
+                'is_paginated': is_paginated,
+                'paginator': paginator,
+                'page_obj': page_obj,
+                'current_path': current_path,
+            })
+            return JsonResponse({'data': data})
+
+        return self.render_to_response(context)
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -64,7 +89,7 @@ class SeminarsListView(ListView):
         else:
             active_category = Category.objects.get(url=category_url)
 
-        queryset = self.get_queryset().annotate(Count('id'))
+        queryset = self.object_list.annotate(Count('id'))
         seminar_count = queryset.count()
 
         context['seminar_count'] = seminar_count

@@ -12,14 +12,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
           rel="stylesheet">
 
-    <!-- CSS -->
-    <link rel="shortcut icon" href="{% static '/images/begoacademy_icon.png' %}" type="image/x-icon">
-
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/responsive_style.css' %}">
+
+    <!-- Custom CSS -->
+    <link rel="shortcut icon" href="{% static 'images/begoacademy_icon.png' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive_style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/spinner.css' %}">
 
     <!-- Scripts-->
     <script src="https://kit.fontawesome.com/c2302614a4.js" crossorigin="anonymous"></script>
@@ -33,32 +34,17 @@
             integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
             crossorigin="anonymous"></script>
 
-    <!-- Yandex.Metrika counter -->
-    <script type="text/javascript">
-       (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-       m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-       (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-    
-       ym(76390156, "init", {
-            clickmap:true,
-            trackLinks:true,
-            accurateTrackBounce:true
-       });
-
-    </script>
-    <noscript>
-        <div><img src="https://mc.yandex.ru/watch/76390156" style="position:absolute; left:-9999px;" alt=""/></div>
-    </noscript>
-    <!-- /Yandex.Metrika counter -->
+    <!-- Ajax -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
     <title>{% block title %}Bego Academy{% endblock title %}</title>
 
 </head>
 
 <body>
-    
+
 <!-- Navbar -->
-<nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
+<nav id="navbar" class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
     <div class="container">
         {% load static %}
         <a class="navbar-brand" href="/">
@@ -112,12 +98,15 @@
 </div>
 <!-- /Content -->
 
-<!-- Optional JavaScript; choose one of the two! -->
-
-<!-- Option 1: Bootstrap Bundle with Popper -->
+<!-- Bootstrap Bundle with Popper -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0"
         crossorigin="anonymous"></script>
+
+<!-- Custom -->
+<script src="{% static 'js/active_menu_link.js' %}"></script>
+<script src="{% static 'js/ajax/seminars.js' %}"></script>
+<script src="{% static 'js/hide_navbar.js' %}"></script>
 
 </body>
 
@@ -159,15 +148,12 @@
                                 src="{% static '/images/icons/whatsapp.png' %}" alt="WhatsApp"></a>
                     </b>
                 </p>
-                <p class="footer-bottom">© <span id="copyright-year"></span> Учебный центр BEGO Academy</p>
+                <p class="footer-bottom">© {% now 'Y' %} Учебный центр BEGO Academy</p>
             </div>
         </div>
         <!-- /Grid row -->
     </div>
 </footer>
 <!-- /Footer -->
-
-<script src="{% static '/js/active_menu_link.js' %}"></script>
-<script src="{% static '/js/get_full_year.js' %}"></script>
 
 </html>

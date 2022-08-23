@@ -49,15 +49,6 @@
                     </h4>
                     {% csrf_token %}
                     {{ form|crispy }}
-{#                    {% if messages %}#}
-{#                        <ul class="messages">#}
-{#                            {% for message in messages %}#}
-{#                                {% if message.tags == 'error' %}#}
-{#                                    <li class="text-danger">{{ message }}</li>#}
-{#                                {% endif %}#}
-{#                            {% endfor %}#}
-{#                        </ul>#}
-{#                    {% endif %}#}
                     <div class="g-recaptcha" data-sitekey="6LeEMHsgAAAAAG9l65Exk3yAquK2PGKkVwhPG3sV"
                          data-callback="enableBtn" data-expired-callback="disableBtn"></div>
                     <button type="submit" class="btn blue-btn" id="recaptcha-submit" disabled>Подтвердите, что Вы не

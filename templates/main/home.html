@@ -54,53 +54,51 @@
         </h2>
         <div class="row default-padding">
             {% for seminar in object_list %}
-                {% if seminar.is_published %}
-                    <div class="col-sm">
-                        <div class="card home-card mb-3">
-                            {% if seminar.lector.all.count|add:'0' == 1 %}
-                                {% for lector in seminar.lector.all %}
-                                    <img src="{{ lector.photo.url }}" class="card-img-top" alt="Фото">
-                                {% endfor %}
-                            {% else %}
-                                {% if seminar.reserve_photo %}
-                                    <img src="{{ seminar.reserve_photo.url }}" class="card-img-top" alt="Фото">
-                                {% elif not seminar.reserve_photo %}
-                                    <img src="{% static 'images/default_seminar.jpg' %}" class="card-img-top"
-                                         alt="Фото">
-                                {% endif %}
+                <div class="col-sm">
+                    <div class="card home-card mb-3">
+                        {% if seminar.lector.all.count|add:'0' == 1 %}
+                            {% for lector in seminar.lector.all %}
+                                <img src="{{ lector.photo.url }}" class="card-img-top" alt="Фото">
+                            {% endfor %}
+                        {% else %}
+                            {% if seminar.reserve_photo %}
+                                <img src="{{ seminar.reserve_photo.url }}" class="card-img-top" alt="Фото">
+                            {% elif not seminar.reserve_photo %}
+                                <img src="{% static 'images/default_seminar.jpg' %}" class="card-img-top"
+                                     alt="Фото">
                             {% endif %}
-                            <div class="card-body">
-                                <!--    {% for category in seminar.category.all %}-->
-                                    <!--    <a href="{{ category.get_url }}" class="badge bg-warning"># {{ category }}</a>-->
-                                    <!--    {% endfor %}-->
-                                {% for lector in seminar.lector.all %}
-                                    {% if lector.id == 64 %}
-                                        <h4 style="padding-top: 38px;"></h4>
-                                    {% else %}
-                                        <h4 class="lector-title">{{ lector.name }}</h4>
-                                    {% endif %}
-                                {% endfor %}
-                                <h5 class="card-title card-height">{{ seminar.title|truncatechars:45 }}</h5>
-                                <ul class="list list-height">
-                                    {% if seminar.organizer %}
-                                        <li><span><i class="fas fa-flag"></i></span>Организатор: {{ seminar.organizer }}
-                                        </li>
-                                    {% endif %}
-                                    <li><span><i class="fas fa-stream"></i></span>{{ seminar.type }}</li>
-                                    <li><span><i class="far fa-calendar-alt"></i></span>{{ seminar.date_info }}</li>
-                                    <!-- {{ post.date|date:"d.m.Y" }} -->
-                                    <li><span><i class="fas fa-map-marker-alt"></i></span>{{ seminar.place }}</li>
-                                    {% if seminar.participants %}
-                                        <li><span><i class="fas fa-users"></i></span>Количество
-                                            участников: {{ seminar.participants }}
-                                        </li>
-                                    {% endif %}
-                                </ul>
-                                <a href="{{ seminar.get_url }}" class="btn blue-btn">Подробнее</a>
-                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <!--    {% for category in seminar.category.all %}-->
+                                <!--    <a href="{{ category.get_url }}" class="badge bg-warning"># {{ category }}</a>-->
+                                <!--    {% endfor %}-->
+                            {% for lector in seminar.lector.all %}
+                                {% if lector.id == 64 %}
+                                    <h4 style="padding-top: 38px;"></h4>
+                                {% else %}
+                                    <h4 class="lector-title">{{ lector.name }}</h4>
+                                {% endif %}
+                            {% endfor %}
+                            <h5 class="card-title card-height">{{ seminar.title|truncatechars:45 }}</h5>
+                            <ul class="list list-height">
+                                {% if seminar.organizer %}
+                                    <li><span><i class="fas fa-flag"></i></span>Организатор: {{ seminar.organizer }}
+                                    </li>
+                                {% endif %}
+                                <li><span><i class="fas fa-stream"></i></span>{{ seminar.type }}</li>
+                                <li><span><i class="far fa-calendar-alt"></i></span>{{ seminar.date_info }}</li>
+                                <!-- {{ post.date|date:"d.m.Y" }} -->
+                                <li><span><i class="fas fa-map-marker-alt"></i></span>{{ seminar.place }}</li>
+                                {% if seminar.participants %}
+                                    <li><span><i class="fas fa-users"></i></span>Количество
+                                        участников: {{ seminar.participants }}
+                                    </li>
+                                {% endif %}
+                            </ul>
+                            <a href="{{ seminar.get_url }}" class="btn blue-btn">Подробнее</a>
                         </div>
                     </div>
-                {% endif %}
+                </div>
             {% endfor %}
         </div>
 

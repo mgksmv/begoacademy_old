@@ -19,7 +19,7 @@ def send_mail_task(subject, message, to_email=None):
 def move_seminar_to_past_seminars():
     now = date.today()
     all_seminars = apps.get_model(app_label='seminars', model_name='Seminar')
-    for seminar in all_seminars.objects.all():
+    for seminar in all_seminars.objects.filter(is_finished=False):
         if now >= seminar.date and not seminar.is_finished:
             seminar.is_finished = True
             seminar.save()

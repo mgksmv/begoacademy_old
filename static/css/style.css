@@ -1,6 +1,8 @@
 body {
-    font-family: 'Roboto', sans-serif;
+    /*font-family: 'Roboto', sans-serif;*/
+    font-family: 'Noto Sans Display', sans-serif;
 }
+
 
 @-webkit-keyframes zoom {
     from {
@@ -60,8 +62,8 @@ body {
 }
 
 .badge.bg-warning:hover,
-.badge.bg-warning:active, 
-.badge.bg-warning:focus, 
+.badge.bg-warning:active,
+.badge.bg-warning:focus,
 .badge.bg-warning:target,
 .badge.bg-warning:active:focus {
     background-color: #234493 !important;
@@ -120,7 +122,11 @@ body {
     opacity: 0.85;
 }
 
-div.seminar-categories {
+.categories {
+    display: unset
+}
+
+div .web-categories {
     position: sticky;
     top: 100px;
 }
@@ -147,6 +153,10 @@ h3 {
 
 hr {
     margin: 5px;
+}
+
+#navbar {
+    transition: top 0.3s;
 }
 
 .navbar-nav .nav-item.active .nav-link,
@@ -322,18 +332,40 @@ hr {
 
 .green-btn:hover {
     background-color: #fff;
-    border-color: #234493;
-    color: #234493;
+    border-color: #00A9A5;
+    color: #00A9A5;
 }
 
 .green-btn:focus {
     background-color: #fff;
-    color: #234493;
+    color: #00A9A5;
 }
 
 .green-btn:active {
     background-color: #fff;
-    color: #234493;
+    color: #00A9A5;
+}
+
+.btn-category {
+    color: #212529;
+    text-align: left;
+}
+
+.btn-category:hover, .btn-category:active, .btn-category:visited {
+    border-color: #00A9A5;
+    cursor: pointer;
+}
+
+.btn-category:focus {
+    outline: none;
+}
+
+.page-link:focus {
+    box-shadow: none;
+}
+
+.btn:focus {
+    box-shadow: none;
 }
 
 .carousel-caption {

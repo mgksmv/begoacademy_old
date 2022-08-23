@@ -1,0 +1,77 @@
+{% load static %}
+
+{% if active_category == 1 %}
+    <h6 class="pb-3">Найдено {{ seminar_count }}  {% if seminar_count < 4 %} семинара {% else %}
+        семинаров {% endif %}</h6>
+{% elif active_category != 1 and seminar_count == 1 %}
+    <h6 class="pb-3">Найден 1 семинар в разделе "{{ active_category }}"</h6>
+{% elif active_category != 1 and seminar_count != 0 %}
+    <h6 class="pb-3">Найдено {{ seminar_count }}  {% if seminar_count < 4 %} семинара {% else %}
+        семинаров {% endif %} в разделе "{{ active_category }}"</h6>
+{% else %}
+    <h6 class="text-danger">Ничего не найдено</h6>
+{% endif %}
+
+<div class="loader ajax-loader-pagination text-center" style="display: none">Загрузка...</div>
+
+{% include 'includes/paginator.html' %}
+
+{% for seminar in object_list %}
+    <div class="card mb-3">
+        <div class="row g-0">
+            <div class="col-md-4">
+                {% if seminar.lector.all.count|add:'0' == 1 %}
+                    {% for lector in seminar.lector.all %}
+                        <img src="{{ lector.photo.url }}" class="card-img" alt="Фото">
+                    {% endfor %}
+                {% else %}
+                    {% if seminar.reserve_photo %}
+                        <img src="{{ seminar.reserve_photo.url }}" class="card-img" alt="Фото">
+                    {% elif not seminar.reserve_photo %}
+                        <img src="{% static 'images/default_seminar.jpg' %}" class="card-img"
+                             alt="Фото">
+                    {% endif %}
+                {% endif %}
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    {% for category in seminar.category.all %}
+                        <a href="
+
+                                {% if not is_finished %}{{ category.get_url }}{% else %}{{ category.get_past_url }}{% endif %}"
+                           class="badge bg-warning"># {{ category }}</a>
+                    {% endfor %}
+                    {% for lector in seminar.lector.all %}
+                        {% if lector.id != 64 %}
+                            <h4 class="lector-title">{{ lector.name }}</h4>
+                        {% endif %}
+                    {% endfor %}
+                    <h5 class="card-title">{{ seminar.title }}</h5>
+                    <ul class="list">
+                        {% if seminar.organizer %}
+                            <li><span><i
+                                    class="fas fa-flag"></i></span>Организатор: {{ seminar.organizer }}
+                            </li>
+                        {% endif %}
+                        <li><span><i class="fas fa-stream"></i></span>{{ seminar.type }}</li>
+                        {% if seminar.date|date:"Y/m/d" <= today %}
+                            <li><span><i class="far fa-calendar-alt"></i></span>{{ seminar.date }}</li>
+                        {% else %}
+                            <li><span><i class="far fa-calendar-alt"></i></span>{{ seminar.date_info }}
+                            </li>
+                        {% endif %}
+                        {% if seminar.participants %}
+                            <li><span><i class="fas fa-users"></i></span>{{ seminar.participants }}</li>
+                        {% endif %}
+                        <li><span><i
+                                class="fas fa-map-marker-alt"></i></span>{{ seminar.place.address }}
+                        </li>
+                    </ul>
+                    <a href="{{ seminar.get_url }}" class="btn blue-btn">Подробнее</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+
+{% include 'includes/paginator.html' %}

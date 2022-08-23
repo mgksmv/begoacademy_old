@@ -1,0 +1,48 @@
+{% if is_paginated %}
+    <nav class="paginator my-4" aria-label="...">
+        <ul class="pagination justify-content-center">
+            <li class="page-item">
+                <button class="page-link text-danger" value="{{ current_path }}?page=1">В начало</button>
+            </li>
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <button class="page-link" value="{{ current_path }}?page={{ page_obj.previous_page_number }}">
+                        Пред.
+                    </button>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <button class="page-link" value="#">Пред.</button>
+                </li>
+            {% endif %}
+
+            {% for n in page_obj.paginator.page_range %}
+                {% if page_obj.number == n %}
+                    <li class="page-item active">
+                        <button class="page-link" value="{{ current_path }}?page={{ n }}">{{ n }}</button>
+                    </li>
+                {% elif n > page_obj.number|add:-5 and n < page_obj.number|add:5 %}
+                    <li class="page-item">
+                        <button class="page-link" value="{{ current_path }}?page={{ n }}">{{ n }}</button>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next and page_obj.next_page_number <= page_obj.paginator.page_range|length %}
+                <li class="page-item">
+                    <button class="page-link" value="{{ current_path }}?page={{ page_obj.next_page_number }}">След.
+                    </button>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <button class="page-link" value="#">След.</button>
+                </li>
+            {% endif %}
+            <li class="page-item">
+                <button class="page-link text-success"
+                        value="{{ current_path }}?page={{ page_obj.paginator.page_range|length }}">В конец.
+                </button>
+            </li>
+        </ul>
+    </nav>
+{% endif %}

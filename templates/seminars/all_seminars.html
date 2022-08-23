@@ -25,38 +25,56 @@
 
         <div class="row">
             <div class="col-md-3">
-                <div class="seminar-categories">
-                    <h3>Категории</h3>
-                    <div class="list-group" id="category-nav">
-                        <a href="{% if not is_finished %}{% url 'all_seminars' %}{% else %}{% url 'past_seminars' %}{% endif %}"
-                           class="list-group-item justify-content-between align-items-center">Все семинары</a>
-                        {% for category in links %}
-                            <a href="{% if not is_finished %}{{ category.get_url }}{% else %}{{ category.get_past_url }}{% endif %}"
-                               class="list-group-item justify-content-between align-items-center {% if category.url in request.path %} active {% endif %}">{{ category }}</a>
-                        {% endfor %}
+                <div class="categories">
+                    <div class="web-categories">
+                        <h3>Категории</h3>
+                        <div class="list-group" id="category-nav">
+                            <button
+                                class=" btn-category list-group-item justify-content-between align-items-center"
+                                value="{% if not is_finished %}{% url 'all_seminars' %}{% else %}{% url 'past_seminars' %}{% endif %}"
+                            >
+                                Все семинары
+                            </button>
+                            {% for category in links %}
+                                <button
+                                    class=" btn-category list-group-item justify-content-between align-items-center"
+                                    value="{% if not is_finished %}{{ category.get_url }}{% else %}{{ category.get_past_url }}{% endif %}"
+                                >
+                                    {{ category }}
+                                </button>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div id="more-div" style="display: none;">
+                        <ul class="list-group">
+                            <button
+                                class="btn btn-category list-group-item justify-content-between align-items-center"
+                                value="{% if not is_finished %}{% url 'all_seminars' %}{% else %}{% url 'past_seminars' %}{% endif %}"
+                            >
+                                Все семинары
+                            </button>
+                            {% for category in links %}
+                                <button
+                                    class="btn btn-category list-group-item justify-content-between align-items-center"
+                                    value="{% if not is_finished %}{{ category.get_url }}{% else %}{{ category.get_past_url }}{% endif %}"
+                                >
+                                    {{ category }}
+                                </button>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="mobile-categories text-center mb-5">
+                        <button id="more-btn" class="btn green-btn"><i class="fas fa-align-justify"></i>
+                             Категории семинаров
+                        </button>
                     </div>
                 </div>
-                <div id="moreDiv" style="display: none;">
-                    <ul class="list-group">
-                        <a href="{% if not is_finished %}{% url 'all_seminars' %}{% else %}{% url 'past_seminars' %}{% endif %}"
-                           class="list-group-item d-flex justify-content-between align-items-center">Все семинары<span
-                                class="badge badge-primary badge-pill">{{ category_count }}</span></a>
-                        {% for category in links %}
-                            <a href="{% if not is_finished %}{{ category.get_url }}{% else %}{{ category.get_past_url }}{% endif %}"
-                               class="list-group-item d-flex justify-content-between align-items-center {% if category.url in request.path %} active {% endif %}">{{ category }}<span
-                                    class="badge badge-primary badge-pill">{{ category_count }}</span></a>
-                        {% endfor %}
-                    </ul>
-                </div>
-                <div class="mobile-categories text-center mb-5">
-                    <button id="moreBtn" onclick="showMore()" class="btn green-btn"><i class="fas fa-align-justify"></i>
-                         Категории семинаров
-                    </button>
-                </div>
-
             </div>
 
-            <div class="col-md-9">
+            <div class="loader ajax-loader text-center" style="display: none">Загрузка...</div>
+
+            <div id="seminars-content" class="col-md-9">
                 {% if active_category == 1 %}
                     <h6 class="pb-3">Найдено {{ seminar_count }}  {% if seminar_count < 4 %} семинара {% else %}
                         семинаров {% endif %}</h6>
@@ -69,7 +87,7 @@
                     <h6 class="text-danger">Ничего не найдено</h6>
                 {% endif %}
 
-                {% include 'includes/paginator.html' %}
+                {% include 'includes/ajax/paginator.html' %}
 
                 {% for seminar in object_list %}
                     <div class="card mb-3">
@@ -126,13 +144,12 @@
                     </div>
                 {% endfor %}
 
-                {% include 'includes/paginator.html' %}
+                {% include 'includes/ajax/paginator.html' %}
 
             </div>
         </div>
     </div>
 
-    <script src="{% static 'js/show_categories.js' %}"></script>
-    <script src="{% static 'js/category_links.js' %}"></script>
+    <script src="{% static 'js/show_categories.js' %}?v=2"></script>
 
 {% endblock content %}
